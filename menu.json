@@ -1,0 +1,23 @@
+{
+    "component": "shell",
+    "title": "Suivi de Rucher",
+    "link": "/",
+    "icon": "flower",
+    "language":"fr-FR",
+    "norobot": "TRUE",
+    "menu_item": [
+        {"title": "Ruchers", "submenu": [
+            {"link": "ruchers.sql?tab=1", "title": "Liste complète"},
+            {"link": "ruchers.sql?tab=2", "title": "Ajouter un rucher"}
+        ]},
+        {"title": "Ruches", "submenu": [
+            {"link": "ruches.sql?tab=1", "title": "Liste complète"},
+            {"link": "ruches.sql?tab=2", "title": "Ajouter une ruche"}
+        ]},
+        {"link": "parametres.sql", "title": "Paramètres"},
+        {"title": "Mon compte", "submenu": [
+            {"link": "parametres.sql", "title": "Mon profil"},
+            {"link": "logout.sql", "title": "Se déconnecter"}
+        ]}
+    ]
+}

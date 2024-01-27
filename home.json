@@ -1,0 +1,11 @@
+{
+    "component": "shell",
+    "title": "Suivi de Rucher",
+    "link": "/",
+    "icon": "flower",
+    "language":"fr-FR",
+    "norobot": "TRUE",
+    "menu_item": [
+    {"link": "signin.sql", "title": "Connexion"}
+    ]
+}
