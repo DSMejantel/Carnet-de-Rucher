@@ -90,7 +90,139 @@ SELECT
     ![](./icons/milk.svg)
 ](production_rucher.sql?tab=5&id='||id||')' as Actions
 	 FROM rucher WHERE id=$id;
-	 
+
+select 
+    'tracking'       as component,
+    'état du rucher : '||' '||(SELECT count(distinct numero)||' ruche(s)' FROM colonie WHERE colonie.rucher_id=$id) as title,
+    'bottom'            as placement,
+    12               as width
+    WHERE $tab='1';
+select 
+    CASE WHEN colonie.tracing=2
+    THEN 'warning'
+    WHEN colonie.tracing=3
+    THEN 'danger'
+    ELSE 'success'
+    END as color,
+    'ruche n°'||numero as title
+    FROM colonie LEFT JOIN colvisite on colonie.id=colvisite.ruche_id WHERE colonie.rucher_id=$id and $tab='1' GROUP BY colonie.id;	 
+
+-- Carte
+select 
+    'button' as component WHERE $tab='1';
+select 
+    'rucher.sql?tab=1&aire=1&id='||$id as link,
+    'Afficher l''aire de butinage'            as title,
+    'eye'  as icon,
+    CASE WHEN $aire=1
+    THEN TRUE
+    ELSE FALSE
+    END as disabled
+    WHERE $tab='1';
+select 
+    'rucher.sql?tab=1&aire=0&id='||$id as link,     
+    'Masquer l''aire de butinage' as title,
+    'eye-off'  as icon,
+    CASE WHEN $aire<>1 or $aire is Null
+    THEN TRUE
+    ELSE FALSE
+    END as disabled
+    WHERE $tab='1';
+SELECT 
+    'map' as component,
+    13 as zoom,
+    Lat as latitude,
+    Lon as longitude,
+    600 as height,
+    'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png' as tile_source,
+    ''    as attribution
+    FROM rucher WHERE id=$id and $tab='1'; 
+
+SELECT
+    nom as title,
+    Lat AS latitude, 
+    Lon AS longitude,
+    'home' as icon
+    FROM rucher WHERE id=$id and $tab='1'; 
+SELECT
+    CASE WHEN $aire=1 and $tab=1
+    THEN'red' 
+    ELSE ''
+    END as color,
+    CASE WHEN $aire=1 and $tab=1
+    THEN
+'{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              '||Lon||', '||sum(Lat-0.023)||'
+            ],
+            [
+              '||sum(Lon+0.023)||', '||sum(Lat-0.016)||'
+            ],
+            [
+              '||sum(Lon+0.032)||', '||Lat||'
+            ],
+            [
+              '||sum(Lon+0.023)||', '||sum(Lat+0.016)||'
+            ],
+            [
+              '||Lon||', '||sum(Lat+0.023)||'
+            ],
+            [
+              '||sum(Lon-0.023)||', '||sum(Lat+0.016)||'
+            ],
+            [
+             '||sum(Lon-0.032)||', '||Lat||'
+            ],
+            [
+              '||sum(Lon-0.023)||', '||sum(Lat-0.016)||'
+            ],
+            [
+              '||Lon||', '||sum(Lat-0.023)||'
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}' ELSE ''
+    END as geojson
+        FROM rucher WHERE id=$id and $tab=1 and $aire=1; 
+    
+
+-- Onglets : Interventions
+select 
+    'timeline' as component where $tab='4';
+select 
+    'grip-horizontal' as icon,
+    action as title,
+    strftime('%d/%m/%Y',horodatage) as date,
+    details as description
+    FROM ruvisite INNER JOIN intervention on ruvisite.suivi=intervention.id WHERE rucher_id=$id and $tab='4';
+
+-- Onglets : Production
+select 
+    'chart2'    as component,
+    'Récoltes' as title,
+    'bar'      as type,
+    TRUE       as stacked,
+    TRUE as labels,
+    TRUE       as toolbar
+    where $tab='5';
+select 
+    categorie as series,
+    annee   as x,
+    coalesce(total, 0)   as value
+    FROM production JOIN miel on production.produit=miel.id where rucher_id=$id and $tab='5';
+    
 -- Ruches     
 -- Liste
 SELECT 'table' as component,
@@ -124,64 +256,8 @@ SELECT
 	 FROM colonie JOIN couleur on colonie.couleur=couleur.id JOIN modele on colonie.modele=modele.id WHERE rucher_id=$id and $tab='2';
 
 
-select 
-    'tracking'       as component,
-    'état du rucher' as title,
-    'bottom'            as placement,
-    4                as width
-    WHERE $tab='1';
-select 
-    CASE WHEN colonie.tracing=2
-    THEN 'warning'
-    WHEN colonie.tracing=3
-    THEN 'danger'
-    ELSE 'success'
-    END as color,
-    'ruche n°'||numero as title
-    FROM colonie LEFT JOIN colvisite on colonie.id=colvisite.ruche_id WHERE colonie.rucher_id=$id and $tab='1' GROUP BY colonie.id;
 
--- Carte
-SELECT 
-    'map' as component,
-    15 as zoom,
-    Lat as latitude,
-    Lon as longitude,
-    400 as height,
-    'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png' as tile_source,
-    ''    as attribution
-    FROM rucher WHERE id=$id and $tab='1'; 
 
-SELECT
-    nom as title,
-    Lat AS latitude, 
-    Lon AS longitude,
-    'home' as icon
-    FROM rucher WHERE id=$id and $tab='1'; 
-
--- Onglets : Interventions
-select 
-    'timeline' as component where $tab='4';
-select 
-    'grip-horizontal' as icon,
-    action as title,
-    strftime('%d/%m/%Y',horodatage) as date,
-    details as description
-    FROM ruvisite INNER JOIN intervention on ruvisite.suivi=intervention.id WHERE rucher_id=$id and $tab='4';
-
--- Onglets : Production
-select 
-    'chart2'    as component,
-    'Récoltes' as title,
-    'bar'      as type,
-    TRUE       as stacked,
-    TRUE as labels,
-    TRUE       as toolbar
-    where $tab='5';
-select 
-    categorie as series,
-    annee   as x,
-    coalesce(total, 0)   as value
-    FROM production JOIN miel on production.produit=miel.id where rucher_id=$id and $tab='5';
     
 
 
