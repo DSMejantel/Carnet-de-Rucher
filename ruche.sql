@@ -121,24 +121,29 @@ select
     FROM colvisite INNER JOIN intervention on colvisite.suivi=intervention.id WHERE ruche_id=$id and $tab='1';
     
 --Onglets souche
+SELECT 'button' as component,
+    'center' as justify
+where $tab='3';
+SELECT
+'Ascendance de la colonie' as title
+where $tab='3';
 SELECT 'table' as component
 	where $tab='3';
 
-WITH RECURSIVE ligne(souche, fille, caractere) AS (
-
-  SELECT colonie.souche, colonie.numero, colonie.caractere
+WITH RECURSIVE ligne(souche, numero, caractere, début, generation) AS (
+  SELECT colonie.souche, colonie.numero, colonie.caractere, colonie.début, 0
   FROM   colonie
-
-UNION 
-
-  SELECT ligne.souche, colonie.numero, ligne.caractere
-  FROM   colonie, ligne
-  WHERE  colonie.souche = ligne.fille
+  WHERE  colonie.numero = $id
+UNION
+  SELECT colonie.souche, colonie.numero, colonie.caractere, colonie.début, ligne.generation + 1
+  FROM   colonie
+  INNER JOIN ligne ON ligne.souche = colonie.numero
 )
 SELECT 
-  ligne.souche as souche,
-  strftime('%d/%m/%Y',(SELECT colonie.début FROM colonie WHERE colonie.numero=ligne.souche)) as Début, 
-  (SELECT colonie.caractere FROM colonie WHERE colonie.numero=ligne.souche) as Caractère
- FROM ligne JOIN colonie on colonie.numero=ligne.souche WHERE ligne.fille=$id and $tab='3' ORDER BY ligne.souche;
-
+  numero,
+  strftime('%d/%m/%Y',début) as Début, 
+  caractere as Caractère
+FROM ligne
+WHERE generation > 0 and $tab='3'
+ORDER BY generation DESC;
 
