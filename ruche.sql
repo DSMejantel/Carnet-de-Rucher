@@ -27,9 +27,10 @@ SELECT
 $id as ruche_id,
 CAST(value AS integer) as element_id from json_each($element) WHERE :element IS NOT NULL and $inv is not null;
 
--- Mettre à jour la colonie dans la base après changement de ruche
+-- Mettre à jour la colonie dans les tables après changement de ruche (colonie et souche + visite de colonie)
 UPDATE colonie SET numero=$numero_Div, rucher_id=$rucher_Div, rang=$rang_Div, couleur=$couleur, modele=$modele  WHERE colonie.numero=$id and $division is not NULL;
 UPDATE colonie SET souche=$numero_Div WHERE colonie.souche=$id and $division is not NULL;
+UPDATE colvisite SET ruche_id=$numero_Div WHERE ruche_id=$id and $division is not NULL;
 SELECT 'redirect' AS component, 'ruche.sql?id='||$numero_Div AS link
 WHERE $division is not NULL;
 

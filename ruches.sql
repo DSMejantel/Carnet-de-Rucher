@@ -35,7 +35,7 @@ select  'Ajouter' as title, 'square-plus' as icon, 0 as active, 'ruches.sql?tab=
     json_group_array(json_object("label" , numero, "value", numero )) as options FROM (
   SELECT numero, numero FROM colonie
   UNION ALL
-  SELECT NULL, 'Inconnue'
+  SELECT NULL, '0-Inconnue'
 ) where $tab='2';
     SELECT 'Caractères' AS label,'textarea' as type, 'caractere' AS name, 6 as width where $tab='2';
     SELECT 'Remarques' AS label,'textarea' as type, 'info' AS name, 6 as width where $tab='2';
