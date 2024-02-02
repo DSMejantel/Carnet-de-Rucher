@@ -75,7 +75,7 @@ select
 
 -- Onglets : Stats - Production
 select 
-    'chart2'    as component,
+    'chart'    as component,
     'Récoltes' as title,
     'bar'      as type,
     TRUE       as stacked,

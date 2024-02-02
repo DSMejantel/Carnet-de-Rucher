@@ -32,8 +32,8 @@ select  'Ajouter' as title, 'square-plus' as icon, 0 as active, 'ruches.sql?tab=
     SELECT 'Date d''installation' AS label, 'début' AS name, 'date' as type, 4 as width where $tab='2';
     SELECT 'Année de la reine' AS label, 'reine' AS name, 'number' as type, '2020' as value, 4 as width where $tab='2';
     SELECT 'souche' AS name, 'select' as type, 4 as width,
-    json_group_array(json_object("label" , numero, "value", id )) as options FROM (
-  SELECT id, numero FROM colonie
+    json_group_array(json_object("label" , numero, "value", numero )) as options FROM (
+  SELECT numero, numero FROM colonie
   UNION ALL
   SELECT NULL, 'Inconnue'
 ) where $tab='2';
@@ -62,11 +62,11 @@ SELECT
     info as infos,
 '[
     ![](./icons/eye.svg)
-](ruche.sql?tab=1&id='||colonie.id||')[
+](ruche.sql?tab=1&id='||colonie.numero||')[
     ![](./icons/pencil.svg)
-](ruche.sql?tab=2&id='||colonie.id||')[
+](ruche.sql?tab=2&id='||colonie.numero||')[
     ![](./icons/tool.svg)
-](ruche.sql?tab=3&id='||colonie.id||')' as Actions
+](ruche.sql?tab=3&id='||colonie.numero||')' as Actions
 	 FROM colonie INNER JOIN rucher on colonie.rucher_id=rucher.id JOIN couleur on colonie.couleur=couleur.id JOIN modele on colonie.modele=modele.id  where $tab='1';
 
 

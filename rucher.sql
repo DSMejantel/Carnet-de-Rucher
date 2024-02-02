@@ -23,7 +23,7 @@ SELECT
     ruvisite.horodatage as horodatage,
     ruvisite.details as details,
     ruvisite.suivi as suivi,
-    colonie.id as ruche_id
+    colonie.numero as ruche_id
     FROM ruvisite INNER JOIN colonie WHERE colonie.rucher_id=$id and ruvisite.id=$visite and $action is not NULL and $details IS NOT NULL;  
 
 -- Enregistrer une récolte sur le rucher
@@ -65,8 +65,8 @@ select  'Production' as title, 'flower' as icon, 1 as active, 'rucher.sql?tab=5&
     SELECT 'Date d''installation' AS label, 'début' AS name, 'date' as type, 4 as width WHERE $tab='3';
     SELECT 'Année de la reine' AS label, 'reine' AS name, 'number' as type, '2020' as value, '[0-9]{4}' as pattern, 4 as width WHERE $tab='3';
     SELECT 'souche' AS name, 'select' as type, 4 as width,
-    json_group_array(json_object("label" , numero, "value", id )) as options FROM (
-  SELECT id, numero FROM colonie
+    json_group_array(json_object("label" , numero, "value", numero )) as options FROM (
+  SELECT numero, numero FROM colonie
   UNION ALL
   SELECT NULL, 'Inconnue'
 ) WHERE $tab='3';
@@ -105,7 +105,7 @@ select
     ELSE 'success'
     END as color,
     'ruche n°'||numero as title
-    FROM colonie LEFT JOIN colvisite on colonie.id=colvisite.ruche_id WHERE colonie.rucher_id=$id and $tab='1' GROUP BY colonie.id;	 
+    FROM colonie LEFT JOIN colvisite on colonie.numero=colvisite.ruche_id WHERE colonie.rucher_id=$id and $tab='1' GROUP BY colonie.numero;	 
 
 -- Carte
 select 
@@ -210,7 +210,7 @@ select
 
 -- Onglets : Production
 select 
-    'chart2'    as component,
+    'chart'    as component,
     'Récoltes' as title,
     'bar'      as type,
     TRUE       as stacked,
@@ -220,8 +220,8 @@ select
 select 
     categorie as series,
     annee   as x,
-    coalesce(total, 0)   as value
-    FROM production JOIN miel on production.produit=miel.id where rucher_id=$id and $tab='5';
+    total   as value
+    FROM production JOIN miel on production.produit=miel.id where rucher_id=$id and $tab='5' order by production.produit;
     
 -- Ruches     
 -- Liste
@@ -246,13 +246,13 @@ SELECT
     info as infos,
 	'[
     ![](./icons/eye.svg)
-](ruche.sql?tab=1&id='||colonie.id||')[
+](ruche.sql?tab=1&id='||colonie.numero||')[
     ![](./icons/pencil.svg)
-](ruche.sql?tab=2&id='||colonie.id||')[
+](ruche.sql?tab=2&id='||colonie.numero||')[
     ![](./icons/binary-tree.svg)
-](ruche.sql?tab=3&id='||colonie.id||')[
+](ruche.sql?tab=3&id='||colonie.numero||')[
     ![](./icons/tool.svg)
-](intervention_col.sql?id='||colonie.id||')' as Actions
+](intervention_col.sql?id='||colonie.numero||')' as Actions
 	 FROM colonie JOIN couleur on colonie.couleur=couleur.id JOIN modele on colonie.modele=modele.id WHERE rucher_id=$id and $tab='2';
 
 

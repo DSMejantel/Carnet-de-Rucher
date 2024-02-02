@@ -32,11 +32,11 @@ SELECT $categorie WHERE $categorie IS NOT NULL;
 INSERT INTO intervention(action)
 SELECT $action WHERE $action IS NOT NULL;
 
--- ajouter un état de colonie
-/*
-INSERT INTO tracing(etat)
-SELECT $etat WHERE $etat IS NOT NULL;
-*/
+-- ajouter un élément de ruche
+
+INSERT INTO materiel(element)
+SELECT $element WHERE $element IS NOT NULL;
+
 --Onglets
 SET tab=coalesce($tab,'1');
 select 'tab' as component,
@@ -44,10 +44,9 @@ TRUE as center;
 select  'Type de Ruche'  as title, 'home' as icon, 1  as active, 'parametres.sql?tab=1' as link, CASE WHEN $tab='1' THEN 'orange' ELSE 'green' END as color;
 select  'Couleurs' as title, 'palette' as icon, 0 as active, 'parametres.sql?tab=2' as link, CASE WHEN $tab='2' THEN 'orange' ELSE 'green' END as color;
 select  'Interventions' as title, 'tool' as icon, 1 as active, 'parametres.sql?tab=3' as link, CASE WHEN $tab='3' THEN 'orange' ELSE 'green' END as color;
-/*select  'État des colonies' as title, 'report-medical' as icon, 1 as active, 'parametres.sql?tab=4' as link, CASE WHEN $tab='4' THEN 'orange' ELSE 'green' END as color;
-*/
+select  'Élément de ruche' as title, 'box-align-top-filled' as icon, 1 as active, 'parametres.sql?tab=4' as link, CASE WHEN $tab='4' THEN 'orange' ELSE 'green' END as color;
 select  'Variété de Miels' as title, 'flower' as icon, 1 as active, 'parametres.sql?tab=5' as link, CASE WHEN $tab='5' THEN 'orange' ELSE 'green' END as color;
-
+/*
 -- Formulaire pour ajouter un modèle de ruche
 SELECT 'form' as component, 
 'Ajouter un modèle' as title, 
@@ -63,23 +62,21 @@ SELECT 'Modèle' AS 'label', 'text' as type, 'type' AS name, 6 as width      whe
 SELECT 'list' as component  where $tab='1';
 SELECT type as description
  FROM modele where $tab='1'  ORDER by type;
-/*
---Test   
+*/
+--Modèle de ruche   
 select 
-    'card2' as component,
+    'card' as component,
      2      as columns
      where $tab='1';
 select 
-    'Liste' as title,
-    './modele/list.sql?_sqlpage_embed' as embed
+    '/modele/liste.sql?_sqlpage_embed' as embed
     where $tab='1';
 select 
-    'Formulaire' as title,
-    './modele/form.sql?_sqlpage_embed' as embed
+    '/modele/form.sql?_sqlpage_embed' as embed
     where $tab='1';
-*/
 
--- Formulaire pour ajouter une couleur
+
+/*-- Formulaire pour ajouter une couleur
 SELECT 'form' as component, 
 'Ajouter une couleur' as title, 
 'parametres.sql?tab=2' as action,
@@ -103,7 +100,19 @@ select
     'home'                as icon,
     code                    as color
      FROM couleur where $tab='2';
- 
+*/ 
+--Couleur de ruche   
+select 
+    'card' as component,
+     2      as columns
+     where $tab='2';
+select 
+    '/couleur/liste.sql?_sqlpage_embed' as embed
+    where $tab='2';
+select 
+    '/couleur/form.sql?_sqlpage_embed' as embed
+    where $tab='2';
+/*
  -- Formulaire pour ajouter un type d'intervention
 SELECT 'form' as component, 
 'Ajouter un type d''intervention' as title, 
@@ -119,24 +128,34 @@ SELECT 'Actions' AS 'label', 'text' as type, 'action' AS name, 6 as width      w
 SELECT 'list' as component  where $tab='3';
 SELECT action as description
  FROM intervention where $tab='3'  ORDER by action;
- 
- -- Formulaire pour ajouter un état de colonie
-SELECT 'form' as component, 
-'Préciser un bilan de la colonie' as title, 
-'parametres.sql?tab=4' as action,
-'Ajouter' as validate,
-    'green'           as validate_color,
-    'Effacer'           as reset
+*/ 
+--Couleur de ruche   
+select 
+    'card' as component,
+     2      as columns
+     where $tab='3';
+select 
+    '/intervention/liste.sql?_sqlpage_embed' as embed
+    where $tab='3';
+select 
+    '/intervention/form.sql?_sqlpage_embed' as embed
+    where $tab='3';
+
+
+
+ --Élément de ruche
+select 
+    'card' as component,
+     2      as columns
      where $tab='4';
-
-SELECT 'État' AS 'label', 'text' as type, 'etat' AS name, 6 as width      where $tab='4';
-
--- Liste des états tracés
-SELECT 'list' as component  where $tab='4';
-SELECT etat as description
- FROM tracing where $tab='4'  ORDER by etat;
+select 
+    '/materiel/liste.sql?_sqlpage_embed' as embed
+    where $tab='4';
+select 
+    '/materiel/form.sql?_sqlpage_embed' as embed
+    where $tab='4';
  
- -- Formulaire pour ajouter un type de miel
+/* -- Formulaire pour ajouter un type de miel
 SELECT 'form' as component, 
 'Ajouter un type de miel' as title, 
 'parametres.sql?tab=5' as action,
@@ -147,7 +166,19 @@ SELECT 'form' as component,
 
 SELECT 'Catégorie' AS 'label', 'text' as type, 'categorie' AS name, 6 as width      where $tab='5';
 
--- Liste des modèles
+-- Liste des miels
 SELECT 'list' as component where $tab='5';
 SELECT categorie as description
  FROM miel where $tab='5'  ORDER by categorie;
+ */
+ --Catégorie de miel  
+select 
+    'card' as component,
+     2      as columns
+     where $tab='5';
+select 
+    '/miel/liste.sql?_sqlpage_embed' as embed
+    where $tab='5';
+select 
+    '/miel/form.sql?_sqlpage_embed' as embed
+    where $tab='5';

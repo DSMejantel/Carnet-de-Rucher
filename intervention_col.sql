@@ -18,7 +18,7 @@ SELECT
     reine as Reine,
     caractere as Caractères,
     info as infos
-	FROM colonie JOIN rucher on colonie.rucher_id=rucher.id JOIN couleur on colonie.couleur=couleur.id JOIN modele on colonie.modele=modele.id WHERE colonie.id=$id; 
+	FROM colonie JOIN rucher on colonie.rucher_id=rucher.id JOIN couleur on colonie.couleur=couleur.id JOIN modele on colonie.modele=modele.id WHERE colonie.numero=$id; 
 
 -- Ajouter une intervention
     SELECT 
