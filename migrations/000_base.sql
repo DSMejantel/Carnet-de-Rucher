@@ -45,7 +45,7 @@ CREATE TABLE production(
 );
 CREATE TABLE colvisite(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ruche_id INTEGER REFERENCES colonie(numero),
+    ruche_id INTEGER,
     horodatage DATE,
     details TEXT,
     suivi INTEGER,
