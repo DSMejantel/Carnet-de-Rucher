@@ -7,8 +7,7 @@ CREATE TABLE rucher(
     description TEXT
 );
 CREATE TABLE colonie(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    numero TEXT UNIQUE,
+    numero TEXT PRIMARY KEY,
     rucher_id INTEGER REFERENCES rucher(id),
     rang INTEGER,
     couleur TEXT,
@@ -29,10 +28,6 @@ CREATE TABLE modele(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     type TEXT
 );
-CREATE TABLE tracing(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    etat TEXT
-);
 CREATE TABLE intervention(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     action TEXT
@@ -50,7 +45,7 @@ CREATE TABLE production(
 );
 CREATE TABLE colvisite(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ruche_id INTEGER REFERENCES colonie(id),
+    ruche_id INTEGER REFERENCES colonie(numero),
     horodatage DATE,
     details TEXT,
     suivi INTEGER,
@@ -63,4 +58,13 @@ CREATE TABLE ruvisite(
     horodatage DATE,
     details TEXT,
     suivi TEXT
+);
+CREATE TABLE materiel(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    element TEXT
+);
+CREATE TABLE inventaire(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ruche_id INTEGER,
+    element_id INTEGER
 );
