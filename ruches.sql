@@ -44,9 +44,13 @@ select  'Ajouter' as title, 'square-plus' as icon, 0 as active, 'ruches.sql?tab=
 SELECT 'table' as component,
 	'Actions' as markdown,
 	'Reine' as markdown,
+	'Rucher' as markdown,
 	'Ruche' as markdown where $tab<>'2';
 SELECT 
     numero as Num,
+    '[
+    ![](./icons/grip-horizontal.svg)
+](rucher.sql?tab=1&id='||colonie.rucher_id||')' as Rucher,
     nom as Rucher,
     rang as Rang,
     '[
