@@ -4,7 +4,7 @@ SELECT 'redirect' AS component,
 SET group_id = (SELECT user_info.groupe FROM login_session join user_info on user_info.username=login_session.username WHERE id = sqlpage.cookie('session'));
 
 -- Mettre à jour la colonie dans la base
-UPDATE colonie SET rucher_id=$rucher, rang=$rang, couleur=$couleur, modele=$modele, début=$début, reine=$reine, souche=$souche, caractere=$caractere, info=$info WHERE colonie.numero=$id and $action is not NULL;
+UPDATE colonie SET rucher_id=$rucher, rang=$rang, couleur=$couleur, modele=$modele, début=$début, reine=$reine, caractere=$caractere, info=$info WHERE colonie.numero=$id and $action is not NULL;
 
 -- Enregistrer une intervention sur la ruche
 INSERT INTO colvisite(ruche_id, horodatage, details, suivi, tracing)
@@ -85,6 +85,7 @@ SET rucher_edit=(SELECT rucher_id from colonie where numero = $id);
 SET couleur_edit=(SELECT couleur from colonie where numero = $id);
 SET modele_edit=(SELECT modele from colonie where numero = $id);
 SET souche_edit=(SELECT souche from colonie where numero = $id);
+--SELECT 'text' AS component, $souche_edit AS contents; 
 
     SELECT 
     'form' as component,
@@ -100,12 +101,12 @@ SET souche_edit=(SELECT souche from colonie where numero = $id);
     SELECT 'modele' AS name, 'select' as type, 3 as width, $modele_edit::int as value, json_group_array(json_object("label", type, "value", id)) as options FROM (select * FROM modele ORDER BY type ASC), (SELECT modele from colonie where numero = $id) as value WHERE $tab='2';
     SELECT 'Date d''installation' AS label, 'début' AS name, 'date' as type, 4 as width , début as value from colonie where numero = $id and $tab='2';
     SELECT 'Année de la reine' AS label, 'reine' AS name, 'number' as type, '[0-9]{4}' as pattern, 4 as width, reine as value from colonie where numero = $id and $tab='2';
-    SELECT 'souche' AS name, 'select' as type, 4 as width, $souche_edit::int as value,
-    json_group_array(json_object("label" , numero, "value", numero )) as options FROM (
+/*    SELECT 'souche' AS name, 'select' as type, 4 as width, (SELECT $souche_edit::int FROM colonie) as value, json_group_array(json_object("label" , numero, "value", numero )) as options FROM (
   SELECT numero, numero FROM colonie
   UNION ALL
-  SELECT NULL, 'Inconnue'
-) , (SELECT souche from colonie where numero = $id) as value WHERE $tab='2';
+  SELECT origine, NULL FROM provenance ORDER BY origine asc
+) WHERE $tab='2';
+*/
     SELECT 'Caractères' AS label,'textarea' as type, 'caractere' AS name, 6 as width , caractere as value from colonie where numero = $id and $tab='2';
     SELECT 'Remarques' AS label,'textarea' as type, 'info' AS name, 6 as width , info as value from colonie where numero = $id and $tab='2';    
 

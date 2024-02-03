@@ -32,6 +32,11 @@ SELECT $categorie WHERE $categorie IS NOT NULL;
 INSERT INTO intervention(action)
 SELECT $action WHERE $action IS NOT NULL;
 
+-- ajouter une origine d''essaim
+INSERT INTO provenance(origine)
+SELECT $origine WHERE $origine IS NOT NULL;
+
+
 -- ajouter un élément de ruche
 
 INSERT INTO materiel(element)
@@ -46,6 +51,7 @@ select  'Couleurs' as title, 'palette' as icon, 0 as active, 'parametres.sql?tab
 select  'Interventions' as title, 'tool' as icon, 1 as active, 'parametres.sql?tab=3' as link, CASE WHEN $tab='3' THEN 'orange' ELSE 'green' END as color;
 select  'Élément de ruche' as title, 'box-align-top-filled' as icon, 1 as active, 'parametres.sql?tab=4' as link, CASE WHEN $tab='4' THEN 'orange' ELSE 'green' END as color;
 select  'Variété de Miels' as title, 'flower' as icon, 1 as active, 'parametres.sql?tab=5' as link, CASE WHEN $tab='5' THEN 'orange' ELSE 'green' END as color;
+select  'Origine des essaims' as title, 'arrow-big-down-lines' as icon, 1 as active, 'parametres.sql?tab=6' as link, CASE WHEN $tab='6' THEN 'orange' ELSE 'green' END as color;
 /*
 -- Formulaire pour ajouter un modèle de ruche
 SELECT 'form' as component, 
@@ -182,3 +188,15 @@ select
 select 
     '/miel/form.sql?_sqlpage_embed' as embed
     where $tab='5';
+    
+ --Provenance des essaims
+select 
+    'card' as component,
+     2      as columns
+     where $tab='6';
+select 
+    '/origine/liste.sql?_sqlpage_embed' as embed
+    where $tab='6';
+select 
+    '/origine/form.sql?_sqlpage_embed' as embed
+    where $tab='6';

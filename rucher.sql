@@ -68,7 +68,7 @@ select  'Production' as title, 'flower' as icon, 1 as active, 'rucher.sql?tab=5&
     json_group_array(json_object("label" , numero, "value", numero )) as options FROM (
   SELECT numero, numero FROM colonie
   UNION ALL
-  SELECT NULL, '0-Inconnue'
+  SELECT origine, NULL FROM provenance ORDER BY origine asc
 ) WHERE $tab='3';
     SELECT 'Caractères' AS label,'textarea' as type, 'caractere' AS name, 6 as width WHERE $tab='3';
     SELECT 'Remarques' AS label,'textarea' as type, 'info' AS name, 6 as width WHERE $tab='3';
