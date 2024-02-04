@@ -32,11 +32,12 @@ select  'Ajouter' as title, 'square-plus' as icon, 0 as active, 'ruches.sql?tab=
     SELECT 'Date d''installation' AS label, 'début' AS name, 'date' as type, 4 as width where $tab='2';
     SELECT 'Année de la reine' AS label, 'reine' AS name, 'number' as type, '2020' as value, 4 as width where $tab='2';
     SELECT 'souche' AS name, 'select' as type, 4 as width,
-    json_group_array(json_object("label" , numero, "value", numero )) as options FROM (
-  SELECT numero, numero FROM colonie
+    json_group_array(json_object('label' , label, 'value', value )) as options FROM (
+  SELECT 'colonie n°'||numero as label, numero as value FROM colonie
   UNION ALL
-  SELECT origine, NULL FROM provenance ORDER BY origine asc
-) where $tab='2';
+  SELECT origine as label, NULL as value FROM provenance ORDER BY origine asc
+)
+ where $tab='2';
     SELECT 'Caractères' AS label,'textarea' as type, 'caractere' AS name, 6 as width where $tab='2';
     SELECT 'Remarques' AS label,'textarea' as type, 'info' AS name, 6 as width where $tab='2';
     
