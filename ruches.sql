@@ -24,13 +24,13 @@ select  'Ajouter' as title, 'square-plus' as icon, 0 as active, 'ruches.sql?tab=
     'green'           as validate_color,
     'Recommencer'           as reset  where $tab='2';
     
-    SELECT 'Numéro' AS label, 'numero' AS name, 1 as width where $tab='2';
-    SELECT 'Rucher' AS label, 'rucher' AS name, 'select' as type, 4 as width, json_group_array(json_object("label" , nom, "value", id )) as options FROM (select * FROM rucher ORDER BY nom ASC) where $tab='2';
+    SELECT 'Numéro' AS label, 'numero' AS name, 'number' as prefix_icon, 2 as width where $tab='2';
+    SELECT 'Rucher' AS label, 'rucher' AS name, 'select' as type, 3 as width, json_group_array(json_object("label" , nom, "value", id )) as options FROM (select * FROM rucher ORDER BY nom ASC) where $tab='2';
     SELECT 'Rangée' AS label, 'rang' AS name, 'number' as type, 2 as width where $tab='2';
     SELECT 'couleur' AS name, 'select' as type, 2 as width, json_group_array(json_object("label", coloris, "value", id)) as options FROM (select * FROM couleur ORDER BY coloris ASC) where $tab='2';
     SELECT 'modele' AS name, 'select' as type, 3 as width, json_group_array(json_object("label", type, "value", id)) as options FROM (select * FROM modele ORDER BY type ASC) where $tab='2';
     SELECT 'Date d''installation' AS label, 'début' AS name, 'date' as type, 4 as width where $tab='2';
-    SELECT 'Année de la reine' AS label, 'reine' AS name, 'number' as type, '2020' as value, 4 as width where $tab='2';
+    SELECT 'Année de la reine' AS label, 'reine' AS name, 'number' as type, '2020' as value, 'calendar-event' as prefix_icon, 4 as width where $tab='2';
     SELECT 'souche' AS name, 'select' as type, 4 as width,
     json_group_array(json_object('label' , label, 'value', value )) as options FROM (
   SELECT 'colonie n°'||numero as label, numero as value FROM colonie

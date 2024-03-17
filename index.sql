@@ -52,6 +52,37 @@ SELECT 'alert' as component,
     'red' as color
 WHERE $restriction IS NOT NULL;
 
+-- Boutons de page d'accueil
+select 
+    'button' as component,
+    'lg'     as size,
+    'center' as justify,
+    'pill'   as shape;
+
+SELECT 
+    'Commande' as title,
+    'order_form.sql' as link,
+    'receipt-2' as icon,  
+    'green' as outline; 
+    
+select 
+    'Mes ruchers' as title,
+    'ruchers.sql' as link,
+    'grip-horizontal' as icon,
+    'green' as outline;    
+
+SELECT 
+    'Mes ruches' as title,
+    'ruches.sql' as link,
+    'archive' as icon,  
+    'green' as outline; 
+
+select 
+    'Paramètres' as title,
+    'parametres.sql' as link,
+    'tool' as icon,
+    'green' as outline;
+
 
     
 

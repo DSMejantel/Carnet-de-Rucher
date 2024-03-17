@@ -30,9 +30,10 @@ SELECT
     
     SELECT 'Date' AS label, 'horodatage' AS name, 'date' as type, 3 as width;
     SELECT 'Bilan' AS name, 'select' as type, 1 as value, '[{"label": "Normal", "value": 1}, {"label": "Vigilance", "value": 2}, {"label": "Alerte", "value": 3}]' as options, TRUE as required, 3 as width;
-    SELECT 'Intervention' AS label, 'suivi' AS name, 'select' as type, 6 as width, json_group_array(json_object("label" , action, "value", id )) as options FROM (select id, action FROM intervention  UNION ALL
+    SELECT 'Intervention' AS label, 'suivi' AS name, 'select' as type, 3 as width, json_group_array(json_object("label" , action, "value", id )) as options FROM (select id, action FROM intervention  UNION ALL
   SELECT NULL, 'Aucune'
 );
+    SELECT 'Inscription au registre d''élevage' AS label, 'registre' AS name, 'checkbox' as type, 1 as value, 3 as width; 
     SELECT 'Détails' AS label, 'details' AS name, 'textarea' as type, 12 as width;
 
 

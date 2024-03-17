@@ -4,14 +4,15 @@ SELECT 'redirect' AS component,
 SET group_id = (SELECT user_info.groupe FROM login_session join user_info on user_info.username=login_session.username WHERE id = sqlpage.cookie('session'));
 
 -- Mettre à jour la colonie dans la base
-UPDATE colonie SET rucher_id=$rucher, rang=$rang, couleur=$couleur, modele=$modele, début=$début, reine=$reine, caractere=$caractere, info=$info WHERE colonie.numero=$id and $action is not NULL;
+UPDATE colonie SET rucher_id=$rucher, rang=$rang, couleur=$couleur, modele=$modele, début=$début, reine=$reine, caractere=$caractere, info=$info, disparition=$mort WHERE colonie.numero=$id and $action is not NULL;
 
 -- Enregistrer une intervention sur la ruche
-INSERT INTO colvisite(ruche_id, horodatage, details, suivi, tracing)
+INSERT INTO colvisite(ruche_id, horodatage, details, registre_E, suivi, tracing)
 SELECT 
     $id as ruche_id,
     $horodatage as horodatage,
     $details as details,
+    coalesce($registre,0) as registre_E,
     $suivi as suivi,
     $Bilan as tracing
     WHERE $Bilan IS NOT NULL; 
@@ -28,7 +29,7 @@ $id as ruche_id,
 CAST(value AS integer) as element_id from json_each($element) WHERE :element IS NOT NULL and $inv is not null;
 
 -- Mettre à jour la colonie dans les tables après changement de ruche (colonie et souche + visite de colonie)
-UPDATE colonie SET numero=$numero_Div, rucher_id=$rucher_Div, rang=$rang_Div, couleur=$couleur, modele=$modele  WHERE colonie.numero=$id and $division is not NULL;
+UPDATE colonie SET numero=$numero_Div, rucher_id=$rucher_Div, rang=$rang_Div, couleur=$couleur, modele=$modele WHERE colonie.numero=$id and $division is not NULL;
 UPDATE colonie SET souche=$numero_Div WHERE colonie.souche=$id and $division is not NULL;
 UPDATE colvisite SET ruche_id=$numero_Div WHERE ruche_id=$id and $division is not NULL;
 SELECT 'redirect' AS component, 'ruche.sql?id='||$numero_Div AS link
@@ -101,12 +102,15 @@ SET souche_edit=(SELECT souche from colonie where numero = $id);
     SELECT 'modele' AS name, 'select' as type, 3 as width, $modele_edit::int as value, json_group_array(json_object("label", type, "value", id)) as options FROM (select * FROM modele ORDER BY type ASC), (SELECT modele from colonie where numero = $id) as value WHERE $tab='2';
     SELECT 'Date d''installation' AS label, 'début' AS name, 'date' as type, 4 as width , début as value from colonie where numero = $id and $tab='2';
     SELECT 'Année de la reine' AS label, 'reine' AS name, 'number' as type, '[0-9]{4}' as pattern, 4 as width, reine as value from colonie where numero = $id and $tab='2';
+    SELECT 'Mort de la colonie' AS label, 'mort' AS name, 'checkbox' as type, 1 as value, 4 as width; 
+ 
     SELECT 'Caractères' AS label,'textarea' as type, 'caractere' AS name, 6 as width , caractere as value from colonie where numero = $id and $tab='2';
     SELECT 'Remarques' AS label,'textarea' as type, 'info' AS name, 6 as width , info as value from colonie where numero = $id and $tab='2';    
 
 -- Titre : Ruche
 SELECT 'table' as component,
 	'Actions' as markdown,
+	'État' as markdown,
 	'Reine' as markdown,
 	'Rucher' as markdown,
 	'Ruche' as markdown where $tab<>'2';
@@ -128,6 +132,16 @@ SELECT
     reine as Reine,
     caractere as Caractères,
     info as infos,
+    CASE WHEN disparition=1 THEN
+    '[
+    ![](./icons/repeat.svg)
+](./mortalite/active.sql?tab='||$tab||'&id='||colonie.numero||')'
+    ELSE '[
+    ![](./icons/repeat.svg)
+](./mortalite/disparue.sql?tab='||$tab||'&id='||colonie.numero||')'
+     END as État,
+    CASE WHEN disparition=1 THEN 'morte' ELSE 'active'
+    END as État,
 	'[
     ![](./icons/eye.svg)
 ](ruche.sql?tab=1&id='||colonie.numero||')[

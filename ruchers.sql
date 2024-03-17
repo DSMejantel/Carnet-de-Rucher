@@ -49,11 +49,11 @@ SELECT
     'Recommencer'           as reset
     where $tab='2';
     
-    SELECT 'Nom' AS label, 'nom' AS name, 4 as width where $tab='2';
-    SELECT 'Description' AS label, 'description' AS name, 8 as width where $tab='2';
-    SELECT 'Altitude' AS label, 'alt' AS name, 4 as width where $tab='2';
-    SELECT 'Latitude' AS label, 'Lat' AS name, 4 as width where $tab='2';
-    SELECT 'Longitude' AS label, 'Lon' AS name, 4 as width where $tab='2';
+    SELECT 'Nom' AS label, 'nom' AS name, 'home' as prefix_icon, 4 as width where $tab='2';
+    SELECT 'Description' AS label, 'description' AS name, 'photo' as prefix_icon, 8 as width where $tab='2';
+    SELECT 'Altitude' AS label, 'alt' AS name, 'mountain' as prefix_icon, 4 as width where $tab='2';
+    SELECT 'Latitude' AS label, 'Lat' AS name, 'world-latitude' as prefix_icon, 4 as width where $tab='2';
+    SELECT 'Longitude' AS label, 'Lon' AS name, 'world-longitude' as prefix_icon, 4 as width where $tab='2';
 
 -- onglet : Stats - nombre et état des colonies
 SELECT 
@@ -61,12 +61,12 @@ SELECT
     where $tab='3';
 select 
     distinct nom as title,
-    CASE WHEN (SELECT count(distinct numero) FROM colonie WHERE rucher.id=colonie.rucher_id)<2
-    	THEN (SELECT count(distinct numero)||' ruche' FROM colonie WHERE rucher.id=colonie.rucher_id)
-    	ELSE (SELECT count(distinct numero)||' ruches' FROM colonie WHERE rucher.id=colonie.rucher_id) END   as description,
-    CASE WHEN (SELECT count(distinct tracing) FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id)<2
-    	THEN (SELECT count(distinct tracing)||' ruche à surveiller' FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id) 
-    	ELSE (SELECT count(distinct tracing)||' ruches à surveiller' FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id) END as footer,
+    CASE WHEN (SELECT count(distinct numero) FROM colonie WHERE disparition::int<>1 and rucher.id=colonie.rucher_id)<2
+    	THEN (SELECT count(distinct numero)||' ruche' FROM colonie WHERE disparition::int<>1 and rucher.id=colonie.rucher_id)
+    	ELSE (SELECT count(distinct numero)||' ruches' FROM colonie WHERE disparition::int<>1 and rucher.id=colonie.rucher_id) END   as description,
+    CASE WHEN (SELECT count(distinct tracing) FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id  and disparition::int<>1)<2
+    	THEN (SELECT count(distinct tracing)||' ruche à surveiller' FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id  and disparition::int<>1) 
+    	ELSE (SELECT count(distinct tracing)||' ruches à surveiller' FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id  and disparition::int<>1) END as footer,
     	CASE WHEN (SELECT count(distinct tracing) FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id)>0
     	THEN 'alert-triangle-filled'              END    as icon,
     	'orange' as color,
@@ -77,15 +77,16 @@ select
 select 
     'chart'    as component,
     'Récoltes' as title,
-    'bar'      as type,
+    'area'      as type,
+    'ystep' = 50,
     TRUE       as stacked,
     TRUE as labels
     where $tab='3';
 select 
     categorie as series,
     annee   as x,
-    coalesce(total, 0)   as value
-    FROM production JOIN miel on production.produit=miel.id where $tab='3' ORDER BY rucher_id;
+    total as value
+    FROM production JOIN miel on production.produit=miel.id where $tab='3';
     
         
 --Carte   

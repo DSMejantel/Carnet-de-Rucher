@@ -7,11 +7,12 @@ SET group_id = (SELECT user_info.groupe FROM login_session join user_info on use
 SELECT 'dynamic' AS component, sqlpage.read_file_as_text('menu.json') AS properties;
 
 -- Enregistrer une intervention sur le rucher
-INSERT INTO ruvisite(rucher_id, horodatage, details, suivi)
+INSERT INTO ruvisite(rucher_id, horodatage, details, registre_E, suivi)
 SELECT 
     $id as rucher_id,
     $horodatage as horodatage,
     $details as details,
+    coalesce($registre,0) as registre_E,
     $suivi as suivi
     WHERE $details IS NOT NULL; 
 
@@ -27,13 +28,14 @@ SELECT
     FROM ruvisite INNER JOIN colonie WHERE colonie.rucher_id=$id and ruvisite.id=$visite and $action is not NULL and $details IS NOT NULL;  
 
 -- Enregistrer une récolte sur le rucher
-INSERT INTO production(annee, rucher_id, produit, total)
+INSERT INTO production(annee, rucher_id, produit, total, lot)
 SELECT 
     $annee as annee,
     $id as rucher_id,
     $produit as produit,
-    $total as total
-    WHERE $production IS NOT NULL; 
+    $total as total,
+    $lot as lot
+    WHERE $total IS NOT NULL; 
     
 --Onglets
 SET tab=coalesce($tab,'1');
@@ -56,14 +58,14 @@ select  'Production' as title, 'flower' as icon, 1 as active, 'rucher.sql?tab=5&
     'Recommencer'           as reset
      WHERE $tab='3';
     
-    SELECT 'Numéro' AS label, 'numero' AS name, 1 as width WHERE $tab='3';
-    SELECT 'Rucher' AS label, 'rucher' AS name, 'select' as type, 4 as width, $id::integer as value,
+    SELECT 'Numéro' AS label, 'numero' AS name, 'number' as prefix_icon, 2 as width WHERE $tab='3';
+    SELECT 'Rucher' AS label, 'rucher' AS name, 'select' as type, 3 as width, $id::integer as value,
     json_group_array(json_object("label" , nom, "value", id )) as options FROM (select * FROM rucher ORDER BY nom ASC) WHERE $tab='3';
     SELECT 'Rangée' AS label, 'rang' AS name, 'number' as type, 2 as width WHERE $tab='3';
     SELECT 'couleur' AS name, 'select' as type, 2 as width, json_group_array(json_object("label", coloris, "value", id)) as options FROM (select * FROM couleur ORDER BY coloris ASC) WHERE $tab='3';
     SELECT 'modele' AS name, 'select' as type, 3 as width, json_group_array(json_object("label", type, "value", id)) as options FROM (select * FROM modele ORDER BY type ASC) WHERE $tab='3';
     SELECT 'Date d''installation' AS label, 'début' AS name, 'date' as type, 4 as width WHERE $tab='3';
-    SELECT 'Année de la reine' AS label, 'reine' AS name, 'number' as type, '2020' as value, '[0-9]{4}' as pattern, 4 as width WHERE $tab='3';
+    SELECT 'Année de la reine' AS label, 'reine' AS name, 'number' as type, 'calendar-event' as prefix_icon, '2020' as value, '[0-9]{4}' as pattern, 4 as width WHERE $tab='3';
     SELECT 'souche' AS name, 'select' as type, 4 as width,
     json_group_array(json_object('label' , label, 'value', value )) as options FROM (
   SELECT 'colonie n°'||numero as label, numero as value FROM colonie
@@ -80,6 +82,7 @@ SELECT
 	nom as Rucher,
 	alt as altitude,
 	description as description,
+	'orange'   as _sqlpage_color,
 	'[
     ![](./icons/home.svg)
 ](rucher.sql?tab=1&id='||id||')[
@@ -227,6 +230,7 @@ select
 -- Liste
 SELECT 'table' as component,
 	'Actions' as markdown,
+	'État' as markdown,
 	'Reine' as markdown,
 	'Ruche' as markdown
 	WHERE $tab='2';
@@ -244,6 +248,16 @@ SELECT
     reine as Reine,
     caractere as Caractères,
     info as infos,
+        CASE WHEN disparition=1 THEN
+    '[
+    ![](./icons/repeat.svg)
+](./mortalite/active_rucher.sql?tab='||$tab||'&id='||colonie.numero||'&rucher='||$id||')'
+    ELSE '[
+    ![](./icons/repeat.svg)
+](./mortalite/disparue_rucher.sql?tab='||$tab||'&id='||colonie.numero||'&rucher='||$id||')'
+     END as État,
+    CASE WHEN disparition=1 THEN 'morte' ELSE 'active'
+    END as État,
 	'[
     ![](./icons/eye.svg)
 ](ruche.sql?tab=1&id='||colonie.numero||')[

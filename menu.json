@@ -3,6 +3,7 @@
     "title": "Suivi de Rucher",
     "link": "/",
     "icon": "flower",
+    "layout": "fluid",
     "language":"fr-FR",
     "norobot": "TRUE",
     "menu_item": [
@@ -13,6 +14,12 @@
         {"title": "Ruches", "submenu": [
             {"link": "ruches.sql?tab=1", "title": "Liste complète"},
             {"link": "ruches.sql?tab=2", "title": "Ajouter une ruche"}
+        ]},
+        {"title": "Registres", "submenu": [
+            {"link": "elevage.sql", "title": "Registre d'élevage"},
+            {"link": "miellerie.sql", "title": "Registre de Miellerie"},
+            {"link": "order_form.sql", "title": "Registre de vente"},
+            {"link": "compta.sql", "title": "Registre de comptes"}
         ]},
         {"link": "parametres.sql", "title": "Paramètres"},
         {"title": "Mon compte", "submenu": [
