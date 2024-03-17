@@ -1,4 +1,0 @@
-CREATE TABLE provenance(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    origine TEXT
-);
