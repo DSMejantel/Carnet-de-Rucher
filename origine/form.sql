@@ -11,5 +11,5 @@ SELECT 'form' as component,
     'green'           as validate_color,
     'Effacer'           as reset;
 
-SELECT 'Origine' AS 'label', 'text' as type, 'origine' AS name, 6 as width;
+SELECT 'Origine' AS 'label', 'text' as type, 'arrow-big-down-lines' as prefix_icon, 'origine' AS name, 8 as width;
 

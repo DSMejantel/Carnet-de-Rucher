@@ -6,10 +6,10 @@ SET group_id = (SELECT user_info.groupe FROM login_session join user_info on use
 
  -- Formulaire pour ajouter un type de miel
 SELECT 'form' as component, 
-'Ajouter un type de miel' as title, 
+--'Ajouter un type de miel' as title, 
 'parametres.sql?tab=5' as action,
 'Ajouter' as validate,
     'green'           as validate_color,
     'Effacer'           as reset;
 
-SELECT 'Catégorie' AS 'label', 'text' as type, 'categorie' AS name, 6 as width;
+SELECT 'Catégorie' AS 'label', 'text' as type, 'flower' as prefix_icon, 'categorie' AS name, 8 as width;

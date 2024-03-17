@@ -11,6 +11,6 @@ SELECT 'form' as component,
     'green'           as validate_color,
     'Effacer'           as reset;
 
-SELECT 'Actions' AS 'label', 'text' as type, 'action' AS name, 6 as width;
+SELECT 'Actions' AS 'label', 'text' as type, 'tool' as prefix_icon, 'action' AS name, 8 as width;
 
 

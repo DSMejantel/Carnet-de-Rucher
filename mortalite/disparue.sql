@@ -3,13 +3,7 @@ SELECT 'redirect' AS component,
  WHERE NOT EXISTS (SELECT 1 FROM login_session WHERE id=sqlpage.cookie('session'));
 SET group_id = (SELECT user_info.groupe FROM login_session join user_info on user_info.username=login_session.username WHERE id = sqlpage.cookie('session'));
 
-
--- Formulaire pour ajouter un modèle de ruche
-SELECT 'form' as component, 
-'parametres.sql?tab=1' as action,
-'Ajouter' as validate,
-    'green'           as validate_color,
-    'Effacer'           as reset;
-
-SELECT 'Modèle' AS 'label', 'text' as type, 'type' AS name, 'archive' as prefix_icon, 8 as width;
-
+ UPDATE colonie SET disparition=1 WHERE numero=$id
+ RETURNING 
+ 'redirect' as component,
+ '../ruche.sql?tab='||$tab||'&id='||$id as link;

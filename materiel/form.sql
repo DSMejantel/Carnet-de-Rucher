@@ -11,5 +11,5 @@ SELECT 'form' as component,
     'green'           as validate_color,
     'Effacer'           as reset;
 
-SELECT 'Élément de ruche' AS 'label', 'text' as type, 'element' AS name, 6 as width;
+SELECT 'Élément de ruche' AS 'label', 'text' as type, 'box-align-top-filled' as prefix_icon, 'element' AS name, 8 as width;
 
