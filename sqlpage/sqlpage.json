@@ -1,0 +1,9 @@
+{
+  "database_url": "sqlite://./sqlpage/sqlpage.db?mode=rwc",
+  "max_uploaded_file_size": 500000,
+  "port": "8080",
+  "sqlite_extensions": [
+        "mod_spatialite"
+    ]
+}
+
