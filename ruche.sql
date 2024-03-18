@@ -102,7 +102,7 @@ SET souche_edit=(SELECT souche from colonie where numero = $id);
     SELECT 'modele' AS name, 'select' as type, 3 as width, $modele_edit::int as value, json_group_array(json_object("label", type, "value", id)) as options FROM (select * FROM modele ORDER BY type ASC), (SELECT modele from colonie where numero = $id) as value WHERE $tab='2';
     SELECT 'Date d''installation' AS label, 'début' AS name, 'date' as type, 4 as width , début as value from colonie where numero = $id and $tab='2';
     SELECT 'Année de la reine' AS label, 'reine' AS name, 'number' as type, '[0-9]{4}' as pattern, 4 as width, reine as value from colonie where numero = $id and $tab='2';
-    SELECT 'Mort de la colonie' AS label, 'mort' AS name, 'checkbox' as type, 1 as value, 4 as width; 
+    SELECT 'Mort de la colonie' AS label, 'mort' AS name, CASE WHEN disparition=1 THEN TRUE ELSE '' END as checked, 'checkbox' as type, 1 as value, 4 as width from colonie where numero = $id and $tab='2'; 
  
     SELECT 'Caractères' AS label,'textarea' as type, 'caractere' AS name, 6 as width , caractere as value from colonie where numero = $id and $tab='2';
     SELECT 'Remarques' AS label,'textarea' as type, 'info' AS name, 6 as width , info as value from colonie where numero = $id and $tab='2';    
