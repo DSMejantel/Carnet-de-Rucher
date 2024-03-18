@@ -159,7 +159,7 @@ select
 select 
     CASE WHEN rucher_id is not NULL
     THEN 'grip-horizontal'
-    ELSE 'home' 
+    ELSE 'archive' 
     END as icon,
     CASE WHEN tracing='1' THEN 'green'
     WHEN tracing='2' THEN 'orange' 
