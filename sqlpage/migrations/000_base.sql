@@ -18,7 +18,7 @@ CREATE TABLE colonie(
     caractere TEXT,
     info TEXT,
     tracing TEXT,
-    disparition BOOL
+    disparition BOOL DEFAULT 0
 );
 CREATE TABLE couleur(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
