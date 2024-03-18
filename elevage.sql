@@ -11,7 +11,7 @@ SELECT 'dynamic' AS component, sqlpage.read_file_as_text('menu.json') AS propert
 SET tab=coalesce($tab,'1');
 select 'tab' as component;
 select  'Ruchers'  as title, 'home' as icon, 1  as active, 'elevage.sql?tab=1' as link, CASE WHEN $tab='1' THEN 'orange' ELSE 'green' END as color;
-select  'Ruches' as title, 'layout-navbar' as icon, 0 as active, 'elevage.sql?tab=2' as link, CASE WHEN $tab='2' THEN 'orange' ELSE 'green' END as color;
+select  'Ruches' as title, 'archive' as icon, 0 as active, 'elevage.sql?tab=2' as link, CASE WHEN $tab='2' THEN 'orange' ELSE 'green' END as color;
 
     
 

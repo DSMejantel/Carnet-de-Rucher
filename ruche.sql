@@ -41,7 +41,7 @@ SELECT 'dynamic' AS component, sqlpage.read_file_as_text('menu.json') AS propert
 --Onglets
 SET tab=coalesce($tab,'1');
 select 'tab' as component;
-select  'Colonie'  as title, 'home' as icon, 1  as active, 'ruche.sql?tab=1&id='||$id as link, CASE WHEN $tab='1' THEN 'orange' ELSE 'green' END as color;
+select  'Colonie'  as title, 'archive' as icon, 1  as active, 'ruche.sql?tab=1&id='||$id as link, CASE WHEN $tab='1' THEN 'orange' ELSE 'green' END as color;
 select  'Éditer' as title, 'pencil' as icon, 0 as active, 'ruche.sql?tab=2&id='||$id as link, CASE WHEN $tab='2' THEN 'orange' ELSE 'green' END as color;
 select  'Souche' as title, 'binary-tree' as icon, 1 as active, 'ruche.sql?tab=3&id='||$id as link, CASE WHEN $tab='3' THEN 'orange' ELSE 'green' END as color;
 select  'Matériel' as title, 'box-align-top-filled' as icon, 1 as active, 'ruche.sql?tab=4&id='||$id as link, CASE WHEN $tab='4' THEN 'orange' ELSE 'green' END as color;
@@ -60,7 +60,7 @@ SELECT
     nom as Rucher,
     rang as Rang,
     '[
-    ![](./icons/home_'||code||'.svg)
+    ![](./icons/archive_'||code||'.svg)
 ]()' as Ruche,
     type as Ruche,
     strftime('%d/%m/%Y',début) as Début,
@@ -122,7 +122,7 @@ SELECT
     nom as Rucher,
     rang as Rang,
     '[
-    ![](./icons/home_'||code||'.svg)
+    ![](./icons/archive_'||code||'.svg)
 ]()' as Ruche,
     type as Ruche,
     strftime('%d/%m/%Y',début) as Début,

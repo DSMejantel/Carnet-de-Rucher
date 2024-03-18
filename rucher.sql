@@ -41,7 +41,7 @@ SELECT
 SET tab=coalesce($tab,'1');
 select 'tab' as component;
 select  'Description'  as title, 'home' as icon, 1  as active, 'rucher.sql?tab=1&id='||$id as link, CASE WHEN $tab='1' THEN 'orange' ELSE 'green' END as color;
-select  'Ruches' as title, 'layout-navbar' as icon, 0 as active, 'rucher.sql?tab=2&id='||$id as link, CASE WHEN $tab='2' THEN 'orange' ELSE 'green' END as color;
+select  'Ruches' as title, 'archive' as icon, 0 as active, 'rucher.sql?tab=2&id='||$id as link, CASE WHEN $tab='2' THEN 'orange' ELSE 'green' END as color;
 select  'Ajouter' as title, 'square-plus' as icon, 0 as active, 'rucher.sql?tab=3&id='||$id as link, CASE WHEN $tab='3' THEN 'orange' ELSE 'green' END as color;
 select  'Interventions' as title, 'tool' as icon, 1 as active, 'rucher.sql?tab=4&id='||$id as link, CASE WHEN $tab='4' THEN 'orange' ELSE 'green' END as color;
 select  'Production' as title, 'flower' as icon, 1 as active, 'rucher.sql?tab=5&id='||$id as link, CASE WHEN $tab='5' THEN 'orange' ELSE 'green' END as color;

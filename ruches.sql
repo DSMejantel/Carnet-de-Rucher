@@ -9,7 +9,7 @@ SELECT 'dynamic' AS component, sqlpage.read_file_as_text('menu.json') AS propert
 --Onglets
 SET tab=coalesce($tab,'1');
 select 'tab' as component;
-select  'Colonies'  as title, 'home' as icon, 1  as active, 'ruches.sql?tab=1&id=1' as link, CASE WHEN $tab='1' THEN 'orange' ELSE 'green' END as color;
+select  'Colonies'  as title, 'archive' as icon, 1  as active, 'ruches.sql?tab=1&id=1' as link, CASE WHEN $tab='1' THEN 'orange' ELSE 'green' END as color;
 select  'Ajouter' as title, 'square-plus' as icon, 0 as active, 'ruches.sql?tab=2&id=2' as link, CASE WHEN $tab='2' THEN 'orange' ELSE 'green' END as color;
 
  
@@ -55,7 +55,7 @@ SELECT
     nom as Rucher,
     rang as Rang,
     '[
-    ![](./icons/home_'||code||'.svg)
+    ![](./icons/archive_'||code||'.svg)
 ]()' as Ruche,
     type as Ruche,
     strftime('%d/%m/%Y',début) as Début,

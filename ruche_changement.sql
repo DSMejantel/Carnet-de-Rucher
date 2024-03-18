@@ -20,7 +20,7 @@ SELECT
     nom as Rucher,
     rang as Rang,
     '[
-    ![](./icons/home_'||code||'.svg)
+    ![](./icons/archive_'||code||'.svg)
 ]()' as Ruche,
     type as Ruche,
     strftime('%d/%m/%Y',début) as Début,
