@@ -93,7 +93,7 @@ SELECT 'form' as component,
 
 SELECT 'OPdep' as name, 'Opération' as label, 'Description de la dépense' AS placeholder, 9 as width where $tab=2;
 SELECT 'depense' as name, 'Montant' as label, 'number' AS type, TRUE as required, 3 as width where $tab=2;
-SELECT 'Date' AS label, 'DateDep' AS name, 'date' as type, 3 as width where $tab=3;
+SELECT 'Date' AS label, 'DateDep' AS name, (select date('now')) as value, 'date' as type, 3 as width where $tab=2;
 select 
     'paiementD' as name,
     'radio' as type,
@@ -141,16 +141,18 @@ select
      WHERE  $tab='1';
 select 
     'Total des dépenses' as title,
-    sum(prix)  as description
+    printf("%.2f", sum(prix)*(-1))||' €'  as description
     FROM finances where prix<0  and  $tab='1';
 select 
     'Total des recettes' as title,
-    sum(prix)  as description
+    printf("%.2f", sum(prix))||' €'   as description
     FROM finances where prix>0  and  $tab='1';
 
 select 
     'Bilan financier' as title,
-    sum(prix)  as description
+    CASE WHEN sum(prix)<0 Then 'red' ELSE 'green'
+    END as color,
+    printf("%.2f", sum(prix))||' €'   as description
     FROM finances WHERE  $tab='1';
 
 
@@ -160,7 +162,7 @@ select
     TRUE as small,
     TRUE    as sort,
     TRUE    as search,
-    'Montant  (€)' as align_right,
+    'Montant' as align_right,
     'Paiement' as icon,
     'Facture' as markdown
     where $tab='1';
