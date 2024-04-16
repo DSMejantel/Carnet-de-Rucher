@@ -5,7 +5,13 @@ SET group_id = (SELECT user_info.groupe FROM login_session join user_info on use
 
 --Menu
 SELECT 'dynamic' AS component, sqlpage.read_file_as_text('menu.json') AS properties;
-
+--Titre
+ select 
+    'title'   as component,
+    'Registre de miellerie' as contents,
+    TRUE as center,
+    3         as level;
+    
 -- Enregistrer un miel provenant d'un lot
 INSERT INTO produits(lot, produits, categorie, nombre, reste, vente, prix, DDM)
 SELECT 

@@ -19,7 +19,7 @@ CASE COALESCE(sqlpage.cookie('session'), '')
 SET group_id = (SELECT user_info.groupe FROM login_session join user_info on user_info.username=login_session.username WHERE id = sqlpage.cookie('session'));    
 
 ---- Ligne d'identification de l'utilisateur et de son mode de connexion
-select 
+/*select 
     'button' as component,
     'sm'     as size,
     'pill'   as shape;
@@ -44,7 +44,7 @@ COALESCE((SELECT
             user_info.nom)
     FROM login_session join user_info on user_info.username=login_session.username WHERE id = sqlpage.cookie('session')
 ), 'L''accès aux informations de cette application nécessite d''être identifié.') AS contents;
-  
+*/  
 -- Message si droits insuffisants sur une page
 SELECT 'alert' as component,
     'Attention !' as title,
@@ -93,7 +93,7 @@ select
 
 -- onglet : Stats - nombre et état des colonies
 SELECT 
-    'datagrid' as component;
+    'datagrid' as component WHERE sqlpage.cookie('session') is not null;
 select 
     distinct nom as title,
     CASE WHEN (SELECT count(distinct numero) FROM colonie WHERE disparition::int<>1 and rucher.id=colonie.rucher_id)<2
@@ -106,7 +106,7 @@ select
     	THEN 'alert-triangle-filled'              END    as icon,
     	'orange' as color,
     	'rucher.sql?tab=1&id='||rucher.id as link
-    FROM rucher left join colonie on rucher.id=colonie.rucher_id where (SELECT count(distinct numero) FROM colonie WHERE disparition::int<>1 and rucher.id=colonie.rucher_id)>0;
+    FROM rucher left join colonie on rucher.id=colonie.rucher_id where (SELECT count(distinct numero) FROM colonie WHERE disparition::int<>1 and rucher.id=colonie.rucher_id)>0 and sqlpage.cookie('session') is not null;
 
     
 --Liste des ruches à surveiller

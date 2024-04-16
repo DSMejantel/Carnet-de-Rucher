@@ -18,8 +18,9 @@
         {"title": "Registres", "submenu": [
             {"link": "elevage.sql", "title": "Registre d'élevage"},
             {"link": "miellerie.sql", "title": "Registre de Miellerie"},
-            {"link": "order_form.sql", "title": "Registre de vente"},
-            {"link": "compta.sql", "title": "Registre de comptes"}
+            {"link": "compta.sql", "title": "Registre de comptes"},
+            {"link": "order_form.sql", "title": "Commande"},
+            {"link": "order.sql", "title": "Factures"}            
         ]},
         {"link": "parametres.sql", "title": "Paramètres"},
         {"title": "Mon compte", "submenu": [
