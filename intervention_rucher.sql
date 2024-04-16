@@ -14,9 +14,9 @@ SELECT
 	alt as altitude,
 	description as description,
 	'[
-    ![](./icons/home.svg)
-](rucher.sql?tab=1&id='||id||')[
     ![](./icons/grip-horizontal.svg)
+](rucher.sql?tab=1&id='||id||')[
+    ![](./icons/archive.svg)
 ](rucher.sql?tab=2&id='||id||')[
     ![](./icons/tool.svg)
 ](intervention_rucher.sql?tab=4&id='||id||')[
@@ -31,7 +31,7 @@ SELECT
     ''     as validate,
     'Recommencer'           as reset;
     
-    SELECT 'Date' AS label, 'horodatage' AS name, 'date' as type, 3 as width;
+    SELECT 'Date' AS label, 'horodatage' AS name, 'date' as type, (select date('now')) as value, 3 as width;
     SELECT 'Intervention' AS label, 'suivi' AS name, 'select' as type, 6 as width, json_group_array(json_object("label" , action, "value", id )) as options FROM (select id, action FROM intervention  UNION ALL
   SELECT NULL, 'Aucune'
 );

@@ -29,9 +29,9 @@ SELECT
 	alt as Altitude,
 	description as Description,
 	'[
-    ![](./icons/home.svg)
-](rucher.sql?tab=1&id='||id||')[
     ![](./icons/grip-horizontal.svg)
+](rucher.sql?tab=1&id='||id||')[
+    ![](./icons/archive.svg)
 ](rucher.sql?tab=2&id='||id||')[
     ![](./icons/tool.svg)
 ](intervention_rucher.sql?tab=4&id='||id||')[
@@ -64,9 +64,9 @@ select
     CASE WHEN (SELECT count(distinct numero) FROM colonie WHERE disparition::int<>1 and rucher.id=colonie.rucher_id)<2
     	THEN (SELECT count(distinct numero)||' ruche' FROM colonie WHERE disparition::int<>1 and rucher.id=colonie.rucher_id)
     	ELSE (SELECT count(distinct numero)||' ruches' FROM colonie WHERE disparition::int<>1 and rucher.id=colonie.rucher_id) END   as description,
-    CASE WHEN (SELECT count(distinct tracing) FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id  and disparition::int<>1)<2
-    	THEN (SELECT count(distinct tracing)||' ruche à surveiller' FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id  and disparition::int<>1) 
-    	ELSE (SELECT count(distinct tracing)||' ruches à surveiller' FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id  and disparition::int<>1) END as footer,
+    CASE WHEN (SELECT count(numero) FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id  and disparition::int<>1)<2
+    	THEN (SELECT count(numero)||' ruche à surveiller' FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id  and disparition::int<>1) 
+    	ELSE (SELECT count(distinct numero)||' ruches à surveiller' FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id  and disparition::int<>1) END as footer,
     	CASE WHEN (SELECT count(distinct tracing) FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id)>0
     	THEN 'alert-triangle-filled'              END    as icon,
     	'orange' as color,
@@ -78,15 +78,15 @@ select
     'chart'    as component,
     'Récoltes' as title,
     'area'      as type,
-    'ystep' = 50,
+    'ystep' = 25,
     TRUE       as stacked,
     TRUE as labels
     where $tab='3';
 select 
-    categorie as series,
+    rucher.nom as series,
     annee   as x,
-    total as value
-    FROM production JOIN miel on production.produit=miel.id where $tab='3';
+    sum(coalesce(total,0)) as value
+    FROM production JOIN miel on production.produit=miel.id join rucher on rucher.id=production.rucher_id where $tab='3' group by annee, rucher.id;
     
         
 --Carte   

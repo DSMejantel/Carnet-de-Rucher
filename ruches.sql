@@ -15,8 +15,8 @@ select  'Ajouter' as title, 'square-plus' as icon, 0 as active, 'ruches.sql?tab=
  
 -- Ruches
 -- Enregistrer la colonie dans la base
- INSERT INTO colonie(numero, rucher_id, rang, couleur, modele, début, reine, souche, caractere, info) SELECT $numero, $rucher, $rang, $couleur, $modele, $début, $reine, $souche, $caractere, $info WHERE $numero IS NOT NULL;
- 
+ INSERT INTO colonie(numero, rucher_id, rang, couleur, modele, début, reine, souche, caractere, info, disparition) SELECT $numero, $rucher, $rang, $couleur, $modele, $début, $reine, $souche, $caractere, $info, 0 WHERE $numero IS NOT NULL;
+
 -- Formulaire d'ajout
     SELECT 
     'form' as component,
@@ -24,7 +24,7 @@ select  'Ajouter' as title, 'square-plus' as icon, 0 as active, 'ruches.sql?tab=
     'green'           as validate_color,
     'Recommencer'           as reset  where $tab='2';
     
-    SELECT 'Numéro' AS label, 'numero' AS name, 'number' as prefix_icon, 2 as width where $tab='2';
+    SELECT 'Numéro' AS label, 'numero' AS name, 'number' as prefix_icon, TRUE as required, 2 as width where $tab='2';
     SELECT 'Rucher' AS label, 'rucher' AS name, 'select' as type, 3 as width, json_group_array(json_object("label" , nom, "value", id )) as options FROM (select * FROM rucher ORDER BY nom ASC) where $tab='2';
     SELECT 'Rangée' AS label, 'rang' AS name, 'number' as type, 2 as width where $tab='2';
     SELECT 'couleur' AS name, 'select' as type, 2 as width, json_group_array(json_object("label", coloris, "value", id)) as options FROM (select * FROM couleur ORDER BY coloris ASC) where $tab='2';
@@ -43,11 +43,25 @@ select  'Ajouter' as title, 'square-plus' as icon, 0 as active, 'ruches.sql?tab=
     
 -- Liste
 SELECT 'table' as component,
+	1 as sort,
+	'Alerte' as markdown,
 	'Actions' as markdown,
 	'Reine' as markdown,
 	'Rucher' as markdown,
 	'Ruche' as markdown where $tab<>'2';
 SELECT 
+    CASE WHEN tracing=2
+    THEN '[
+    ![](./icons/alert-orange.svg)
+]()'
+    WHEN tracing=3
+    THEN '[
+    ![](./icons/alert-red.svg)
+]()'
+    ELSE '[
+    ![](./icons/alert-green.svg)
+]()'
+    END as Alerte,
     numero as Num,
     '[
     ![](./icons/grip-horizontal.svg)
@@ -56,7 +70,7 @@ SELECT
     rang as Rang,
     '[
     ![](./icons/archive_'||code||'.svg)
-]()' as Ruche,
+](ruche.sql?tab=1&id='||colonie.numero||')' as Ruche,
     type as Ruche,
     strftime('%d/%m/%Y',début) as Début,
     '[
@@ -72,6 +86,6 @@ SELECT
 ](ruche.sql?tab=2&id='||colonie.numero||')[
     ![](./icons/tool.svg)
 ](ruche.sql?tab=3&id='||colonie.numero||')' as Actions
-	 FROM colonie INNER JOIN rucher on colonie.rucher_id=rucher.id JOIN couleur on colonie.couleur=couleur.id JOIN modele on colonie.modele=modele.id  where $tab='1';
+	 FROM colonie INNER JOIN rucher on colonie.rucher_id=rucher.id JOIN couleur on colonie.couleur=couleur.id JOIN modele on colonie.modele=modele.id  where disparition<>1 and $tab='1'  ORDER BY numero::int;
 
 

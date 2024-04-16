@@ -16,6 +16,7 @@ RETURNING
     FALSE AS secure; -- You can remove this if the site is served over HTTPS.
 
 -- Enregistrer la date de la connexion
+SET connect = (SELECT datetime(current_timestamp, 'localtime'));
 UPDATE user_info SET connexion=$connect WHERE username = :username;
 
 -- Redirect the user to the protected page.

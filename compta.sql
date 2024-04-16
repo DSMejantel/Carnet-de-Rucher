@@ -155,7 +155,6 @@ select
     printf("%.2f", sum(prix))||' €'   as description
     FROM finances WHERE  $tab='1';
 
-
 select 
     'table' as component,
     TRUE as hover,
@@ -188,6 +187,7 @@ select
     operation as Opération,
     printf("%.2f", prix) as Montant
     FROM finances WHERE $tab='1' ORDER BY date_created;
+    
 
 
 

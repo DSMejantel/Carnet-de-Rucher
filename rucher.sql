@@ -42,13 +42,13 @@ SET tab=coalesce($tab,'1');
 select 'tab' as component;
 select  'Description'  as title, 'home' as icon, 1  as active, 'rucher.sql?tab=1&id='||$id as link, CASE WHEN $tab='1' THEN 'orange' ELSE 'green' END as color;
 select  'Ruches' as title, 'archive' as icon, 0 as active, 'rucher.sql?tab=2&id='||$id as link, CASE WHEN $tab='2' THEN 'orange' ELSE 'green' END as color;
-select  'Ajouter' as title, 'square-plus' as icon, 0 as active, 'rucher.sql?tab=3&id='||$id as link, CASE WHEN $tab='3' THEN 'orange' ELSE 'green' END as color;
+select  'Ajouter colonie' as title, 'square-plus' as icon, 0 as active, 'rucher.sql?tab=3&id='||$id as link, CASE WHEN $tab='3' THEN 'orange' ELSE 'green' END as color;
 select  'Interventions' as title, 'tool' as icon, 1 as active, 'rucher.sql?tab=4&id='||$id as link, CASE WHEN $tab='4' THEN 'orange' ELSE 'green' END as color;
 select  'Production' as title, 'flower' as icon, 1 as active, 'rucher.sql?tab=5&id='||$id as link, CASE WHEN $tab='5' THEN 'orange' ELSE 'green' END as color;
 
 -- Ruches
 -- Enregistrer la colonie dans la base
- INSERT INTO colonie(numero, rucher_id, rang, couleur, modele, début, reine, souche, caractere, info) SELECT $numero, $rucher, $rang, $couleur, $modele, $début, $reine, $souche, $caractere, $info WHERE $numero IS NOT NULL;
+ INSERT INTO colonie(numero, rucher_id, rang, couleur, modele, début, reine, souche, caractere, info, disparition) SELECT $numero, $rucher, $rang, $couleur, $modele, $début, $reine, $souche, $caractere, $info, 0 WHERE $numero IS NOT NULL;
 
 -- Formulaire d'ajout
     SELECT 
@@ -58,7 +58,7 @@ select  'Production' as title, 'flower' as icon, 1 as active, 'rucher.sql?tab=5&
     'Recommencer'           as reset
      WHERE $tab='3';
     
-    SELECT 'Numéro' AS label, 'numero' AS name, 'number' as prefix_icon, 2 as width WHERE $tab='3';
+    SELECT 'Numéro' AS label, 'numero' AS name, 'number' as prefix_icon, TRUE as required, 2 as width WHERE $tab='3';
     SELECT 'Rucher' AS label, 'rucher' AS name, 'select' as type, 3 as width, $id::integer as value,
     json_group_array(json_object("label" , nom, "value", id )) as options FROM (select * FROM rucher ORDER BY nom ASC) WHERE $tab='3';
     SELECT 'Rangée' AS label, 'rang' AS name, 'number' as type, 2 as width WHERE $tab='3';
@@ -84,9 +84,9 @@ SELECT
 	description as description,
 	'orange'   as _sqlpage_color,
 	'[
-    ![](./icons/home.svg)
-](rucher.sql?tab=1&id='||id||')[
     ![](./icons/grip-horizontal.svg)
+](rucher.sql?tab=1&id='||id||')[
+    ![](./icons/archive.svg)
 ](rucher.sql?tab=2&id='||id||')[
     ![](./icons/tool.svg)
 ](intervention_rucher.sql?tab=4&id='||id||')[
@@ -107,8 +107,8 @@ select
     THEN 'danger'
     ELSE 'success'
     END as color,
-    'ruche n°'||numero as title
-    FROM colonie LEFT JOIN colvisite on colonie.numero=colvisite.ruche_id WHERE colonie.rucher_id=$id and $tab='1' GROUP BY colonie.numero;	 
+    'ruche n°'||numero||' (rangée '||rang||')' as title
+    FROM colonie LEFT JOIN colvisite on colonie.numero=colvisite.ruche_id WHERE colonie.rucher_id=$id and $tab='1' GROUP BY colonie.numero  ORDER BY rang ;	 
 
 -- Carte
 select 
@@ -203,43 +203,75 @@ SELECT
 
 -- Onglets : Interventions
 select 
-    'timeline' as component where $tab='4';
+    'list' as component where $tab='4';
 select 
     'grip-horizontal' as icon,
-    action as title,
-    strftime('%d/%m/%Y',horodatage) as date,
-    details as description
-    FROM ruvisite INNER JOIN intervention on ruvisite.suivi=intervention.id WHERE rucher_id=$id and $tab='4';
+    strftime('%d/%m/%Y',horodatage)||' : '||action as title,
+    details as description,
+    '/intervention/intervention_ru_edit.sql?intervention='||ruvisite.id||'&id='||$id as edit_link
+    FROM ruvisite INNER JOIN intervention on ruvisite.suivi=intervention.id WHERE rucher_id=$id and $tab='4' order by horodatage DESC;
 
 -- Onglets : Production
+SELECT 'table' as component,
+	1 as sort,
+	'Total' as align_right,
+	'Actions' as markdown
+	WHERE $tab='5';
+SELECT 
+    annee   as Année,
+    categorie as Production,
+    lot as Lot,
+    total   as Total, 
+    '[
+    ![](./icons/pencil.svg)
+    ](./production/production_edit.sql?production='||production.id||'&rucher='||$id||')'as Actions
+    FROM production JOIN miel on production.produit=miel.id where rucher_id=$id and $tab='5' order by production.annee;
+
+SET xticks = (SELECT count(distinct annee) FROM production where rucher_id=$id);
 select 
     'chart'    as component,
     'Récoltes' as title,
     'bar'      as type,
-    TRUE       as stacked,
+    --TRUE       as stacked,
     TRUE as labels,
-    TRUE       as toolbar
-    where $tab='5';
+    --TRUE       as toolbar,
+    $xticks as xticks,
+    "Années" as xtitle
+     where $tab='5';
 select 
     categorie as series,
-    annee   as x,
-    total   as value
-    FROM production JOIN miel on production.produit=miel.id where rucher_id=$id and $tab='5' order by production.produit;
-    
+    annee as x,
+    total  as y
+    FROM production JOIN miel on production.produit=miel.id where rucher_id=$id and $tab='5' order by annee;
+
 -- Ruches     
 -- Liste
 SELECT 'table' as component,
+	1 as sort,
+	'Alerte' as markdown,
 	'Actions' as markdown,
 	'État' as markdown,
 	'Reine' as markdown,
 	'Ruche' as markdown
 	WHERE $tab='2';
 SELECT 
+    CASE WHEN tracing=2
+    THEN '[
+    ![](./icons/alert-orange.svg)
+]()'
+    WHEN tracing=3
+    THEN '[
+    ![](./icons/alert-red.svg)
+]()'
+    ELSE '[
+    ![](./icons/alert-green.svg)
+]()'
+    END as Alerte,
     numero as Numero,
     rang as Rang,
         '[
-    ![](./icons/home_'||code||'.svg)
-]()' as Ruche,
+    ![](./icons/archive_'||code||'.svg)
+](ruche.sql?tab=1&id='||colonie.numero||')' as Ruche,
     type as Ruche,
     strftime('%d/%m/%Y',début) as Début,
     '[
@@ -248,6 +280,15 @@ SELECT
     reine as Reine,
     caractere as Caractères,
     info as infos,
+    '[
+    ![](./icons/circle-green.svg)
+](./alertes/tracing.sql?alerte=1&id='||colonie.numero||'&rucher='||$id||')
+[
+    ![](./icons/circle-orange.svg)
+](./alertes/tracing.sql?alerte=2&id='||colonie.numero||'&rucher='||$id||')
+[
+    ![](./icons/circle-red.svg)
+](./alertes/tracing.sql?alerte=3&id='||colonie.numero||'&rucher='||$id||')' as État,
         CASE WHEN disparition=1 THEN
     '[
     ![](./icons/repeat.svg)
@@ -267,7 +308,7 @@ SELECT
 ](ruche.sql?tab=3&id='||colonie.numero||')[
     ![](./icons/tool.svg)
 ](intervention_col.sql?id='||colonie.numero||')' as Actions
-	 FROM colonie JOIN couleur on colonie.couleur=couleur.id JOIN modele on colonie.modele=modele.id WHERE rucher_id=$id and $tab='2';
+	 FROM colonie JOIN couleur on colonie.couleur=couleur.id JOIN modele on colonie.modele=modele.id WHERE rucher_id=$id and $tab='2' ORDER BY rang;
 
 
 

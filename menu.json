@@ -23,7 +23,7 @@
         ]},
         {"link": "parametres.sql", "title": "Paramètres"},
         {"title": "Mon compte", "submenu": [
-            {"link": "parametres.sql", "title": "Mon profil"},
+            {"link": "user.sql", "title": "Mon profil"},
             {"link": "logout.sql", "title": "Se déconnecter"}
         ]}
     ]

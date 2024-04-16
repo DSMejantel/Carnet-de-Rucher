@@ -4,7 +4,9 @@ SELECT 'redirect' AS component,
 SET group_id = (SELECT user_info.groupe FROM login_session join user_info on user_info.username=login_session.username WHERE id = sqlpage.cookie('session'));
 
 -- Mettre à jour la colonie dans la base
-UPDATE colonie SET rucher_id=$rucher, rang=$rang, couleur=$couleur, modele=$modele, début=$début, reine=$reine, caractere=$caractere, info=$info, disparition=$mort WHERE colonie.numero=$id and $action is not NULL;
+UPDATE colonie SET rucher_id=$rucher, rang=$rang, couleur=$couleur, modele=$modele, début=$début, reine=$reine, caractere=$caractere, info=$info, disparition=coalesce($mort,0) WHERE colonie.numero=$id and $action is not NULL;
+-- Mettre à jour la souche de la colonie
+UPDATE colonie SET souche=$souche WHERE colonie.numero=$id and $souche is not NULL;
 
 -- Enregistrer une intervention sur la ruche
 INSERT INTO colvisite(ruche_id, horodatage, details, registre_E, suivi, tracing)
@@ -81,13 +83,13 @@ SELECT
 ](ruche_changement.sql?id='||colonie.numero||')' as Actions
 	FROM colonie JOIN rucher on colonie.rucher_id=rucher.id JOIN couleur on colonie.couleur=couleur.id JOIN modele on colonie.modele=modele.id WHERE colonie.numero=$id and $tab='2';  
 	
--- Modifier les infos de la ruche
+-- Définir les paramètres de la ruche
 SET rucher_edit=(SELECT rucher_id from colonie where numero = $id);
 SET couleur_edit=(SELECT couleur from colonie where numero = $id);
 SET modele_edit=(SELECT modele from colonie where numero = $id);
 SET souche_edit=(SELECT souche from colonie where numero = $id);
---SELECT 'text' AS component, $souche_edit AS contents; 
 
+-- Modifier les infos de la ruche
     SELECT 
     'form' as component,
     'ruche.sql?tab=1&action=update&id='||$id as action,
@@ -100,7 +102,7 @@ SET souche_edit=(SELECT souche from colonie where numero = $id);
     SELECT 'Rangée' AS label, 'rang' AS name, 'number' as type, 3 as width , rang as value from colonie where numero = $id and $tab='2';
     SELECT 'couleur' AS name, 'select' as type, 2 as width, $couleur_edit::int as value, json_group_array(json_object("label", coloris, "value", id)) as options FROM (select * FROM couleur ORDER BY coloris ASC) WHERE  $tab='2';
     SELECT 'modele' AS name, 'select' as type, 3 as width, $modele_edit::int as value, json_group_array(json_object("label", type, "value", id)) as options FROM (select * FROM modele ORDER BY type ASC), (SELECT modele from colonie where numero = $id) as value WHERE $tab='2';
-    SELECT 'Date d''installation' AS label, 'début' AS name, 'date' as type, 4 as width , début as value from colonie where numero = $id and $tab='2';
+    SELECT 'Date d''installation' AS label, 'début' AS name, 'date' as type, 4 as width , (SELECT début from colonie where numero=$id) as value where $tab='2';
     SELECT 'Année de la reine' AS label, 'reine' AS name, 'number' as type, '[0-9]{4}' as pattern, 4 as width, reine as value from colonie where numero = $id and $tab='2';
     SELECT 'Mort de la colonie' AS label, 'mort' AS name, CASE WHEN disparition=1 THEN TRUE ELSE '' END as checked, 'checkbox' as type, 1 as value, 4 as width from colonie where numero = $id and $tab='2'; 
  
@@ -109,12 +111,25 @@ SET souche_edit=(SELECT souche from colonie where numero = $id);
 
 -- Titre : Ruche
 SELECT 'table' as component,
+	'Alerte' as markdown,
 	'Actions' as markdown,
 	'État' as markdown,
 	'Reine' as markdown,
 	'Rucher' as markdown,
 	'Ruche' as markdown where $tab<>'2';
 SELECT 
+    CASE WHEN tracing=2
+    THEN '[
+    ![](./icons/alert-orange.svg)
+]()'
+    WHEN tracing=3
+    THEN '[
+    ![](./icons/alert-red.svg)
+]()'
+    ELSE '[
+    ![](./icons/alert-green.svg)
+]()'
+    END as Alerte,
     numero as Num,
     '[
     ![](./icons/grip-horizontal.svg)
@@ -132,6 +147,15 @@ SELECT
     reine as Reine,
     caractere as Caractères,
     info as infos,
+        '[
+    ![](./icons/circle-green.svg)
+](./alertes/tracing2.sql?alerte=1&id='||colonie.numero||')
+[
+    ![](./icons/circle-orange.svg)
+](./alertes/tracing2.sql?alerte=2&id='||colonie.numero||')
+[
+    ![](./icons/circle-red.svg)
+](./alertes/tracing2.sql?alerte=3&id='||colonie.numero||')' as État,
     CASE WHEN disparition=1 THEN
     '[
     ![](./icons/repeat.svg)
@@ -155,7 +179,7 @@ SELECT
 
 -- Onglets : Interventions
 select 
-    'timeline' as component where $tab='1';
+    'list' as component where $tab='1';
 select 
     CASE WHEN rucher_id is not NULL
     THEN 'grip-horizontal'
@@ -165,10 +189,14 @@ select
     WHEN tracing='2' THEN 'orange' 
     WHEN tracing='3' THEN 'red' 
     END as color,
-    action as title,
-    strftime('%d/%m/%Y',horodatage) as date,
-    details as description
-    FROM colvisite INNER JOIN intervention on colvisite.suivi=intervention.id WHERE ruche_id=$id and $tab='1';
+    CASE WHEN tracing=1
+    THEN FALSE
+    ELSE TRUE
+    END as active,
+    strftime('%d/%m/%Y',horodatage)||' : '||action as title,
+    details as description,
+    '/intervention/intervention_col_edit.sql?intervention='||colvisite.id||'&id='||$id as edit_link
+    FROM colvisite INNER JOIN intervention on colvisite.suivi=intervention.id WHERE ruche_id=$id and $tab='1' order by horodatage DESC;
     
 --Onglets souche
 select 
@@ -230,6 +258,30 @@ SELECT
 FROM descendance
 WHERE generation > 0 and $tab='3'
 ORDER BY generation DESC;
+
+--Correction de la souche
+select 
+    'divider' as component,
+    '' as contents;
+select 
+    'divider' as component,
+    'Corriger l''origine de la souche' as contents
+    where $tab='3';
+
+    SELECT 
+    'form' as component,
+    'ruche.sql?tab=3&souche=update&id='||$id as action,
+    'Mettre à jour' as validate,
+    'red'           as validate_color  
+    where $tab='3';
+    
+    SELECT 'souche' AS name, 'select' as type, $souche_edit as value, 4 as width,
+    json_group_array(json_object('label' , label, 'value', value )) as options FROM (
+  SELECT 'colonie n°'||numero as label, numero as value FROM colonie  where $tab='3'
+  UNION ALL
+  SELECT origine as label, NULL as value FROM provenance  where $tab='3' ORDER BY origine asc)
+   where $tab='3';
+
 
  --Élément de ruche
 select 

@@ -28,7 +28,7 @@ SELECT
     'green'           as validate_color,
     'Recommencer'           as reset;
     
-    SELECT 'Date' AS label, 'horodatage' AS name, 'date' as type, 3 as width;
+    SELECT 'Date' AS label, 'horodatage' AS name, 'date' as type, (select date('now')) as value, 3 as width;
     SELECT 'Bilan' AS name, 'select' as type, 1 as value, '[{"label": "Normal", "value": 1}, {"label": "Vigilance", "value": 2}, {"label": "Alerte", "value": 3}]' as options, TRUE as required, 3 as width;
     SELECT 'Intervention' AS label, 'suivi' AS name, 'select' as type, 3 as width, json_group_array(json_object("label" , action, "value", id )) as options FROM (select id, action FROM intervention  UNION ALL
   SELECT NULL, 'Aucune'
