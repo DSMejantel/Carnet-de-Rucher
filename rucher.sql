@@ -244,7 +244,20 @@ select
     total  as y
     FROM production JOIN miel on production.produit=miel.id where rucher_id=$id and $tab='5' order by annee;
 
--- Ruches     
+-- Ruches 
+
+--Légende
+select 
+    'alert' as component,
+    'Légende' as title,
+    'green'             as color,
+    TRUE              as important,
+    TRUE              as dismissible,
+   '![Alerte](./icons/alert-triangle-filled.svg)Niveaux d''alerte   ![Éditer](./icons/circle-green.svg)![Éditer](./icons/circle-orange.svg)![Éditer](./icons/circle-red.svg)Modifier le niveau d''alerte  ![Éditer](./icons/repeat.svg)Changer l''état de la colonie
+' as description_md,
+   '  ![Colonie](./icons/eye.svg)Fiche de la colonie   ![Éditer](./icons/pencil.svg)Éditer la colonie  ![Éditer](./icons/binary-tree.svg)Voir la généalogie  ![Éditer](./icons/tool.svg)Noter une intervention 
+' as description_md
+WHERE $tab='2';    
 -- Liste
 SELECT 'table' as component,
 	1 as sort,
