@@ -32,7 +32,24 @@ SELECT
 :paiementD as moyen  
 WHERE :depense is not null and $dep=1;
 
+-- Livre de comptes
+select 
+    'datagrid' as component;
+select 
+    'Total des dépenses' as title,
+    printf("%.2f", sum(prix)*(-1))||' €'  as description
+    FROM finances where prix<0;
+select 
+    'Total des recettes' as title,
+    printf("%.2f", sum(prix))||' €'   as description
+    FROM finances where prix>0;
 
+select 
+    'Bilan financier' as title,
+    CASE WHEN sum(prix)<0 Then 'red' ELSE 'green'
+    END as color,
+    printf("%.2f", sum(prix))||' €'   as description
+    FROM finances;
 
 --Onglets
 SET tab=coalesce($tab,'1');
@@ -44,13 +61,13 @@ select  'Enregistrer une recette' as title, 'credit-card-refund' as icon, 0 as a
 
 -- Enregistrer une recette
 SELECT 'form' as component,
-    'Enregistrer une recette' as title,
+    --'Enregistrer une recette' as title,
     'recette' as id,
     '' as validate
      where $tab=3;
 
 SELECT 'OPrec' as name, 'Opération' as label, 'Description de la recette' AS placeholder, 9 as width where $tab=3;
-SELECT 'recette' as name, 'Montant' as label, 'number' AS type, TRUE as required, 3 as width where $tab=3;
+SELECT 'recette' as name, 'Montant' as label, 'number' AS type, 0.01 as step, TRUE as required, 3 as width where $tab=3;
 SELECT 'Date' AS label, 'DateRec' AS name, (select date('now')) as value, 'date' as type, 3 as width where $tab=3;
 select 
     'paiementR' as name,
@@ -92,13 +109,13 @@ select
 
 -- Enregistrer une dépense
 SELECT 'form' as component,
-    'Enregistrer une dépense' as title,
+    --'Enregistrer une dépense' as title,
     'depense' as id,
     '' as validate
      where $tab=2;
 
 SELECT 'OPdep' as name, 'Opération' as label, 'Description de la dépense' AS placeholder, 9 as width where $tab=2;
-SELECT 'depense' as name, 'Montant' as label, 'number' AS type, TRUE as required, 3 as width where $tab=2;
+SELECT 'depense' as name, 'Montant' as label, 'number' AS type, 0.01 as step, TRUE as required, 3 as width where $tab=2;
 SELECT 'Date' AS label, 'DateDep' AS name, (select date('now')) as value, 'date' as type, 3 as width where $tab=2;
 select 
     'paiementD' as name,
@@ -139,28 +156,15 @@ select
     where $tab='2';
 
 
--- Livre de comptes
-select 
-    'datagrid' as component,
-    'Livre de compte' as title,
-    'coins' as icon
-     WHERE  $tab='1';
-select 
-    'Total des dépenses' as title,
-    printf("%.2f", sum(prix)*(-1))||' €'  as description
-    FROM finances where prix<0  and  $tab='1';
-select 
-    'Total des recettes' as title,
-    printf("%.2f", sum(prix))||' €'   as description
-    FROM finances where prix>0  and  $tab='1';
 
-select 
-    'Bilan financier' as title,
-    CASE WHEN sum(prix)<0 Then 'red' ELSE 'green'
-    END as color,
-    printf("%.2f", sum(prix))||' €'   as description
-    FROM finances WHERE  $tab='1';
 
+--Titre
+ select 
+    'title'   as component,
+    'Historique des opérations' as contents,
+    TRUE as center,
+    3         as level
+        where $tab='1'; 
 select 
     'table' as component,
     TRUE as hover,
