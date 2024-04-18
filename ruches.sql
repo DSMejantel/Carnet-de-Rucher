@@ -85,7 +85,7 @@ SELECT
     ![](./icons/pencil.svg)
 ](ruche.sql?tab=2&id='||colonie.numero||')[
     ![](./icons/tool.svg)
-](ruche.sql?tab=3&id='||colonie.numero||')' as Actions
+](intervention_col.sql?id='||colonie.numero||')' as Actions
 	 FROM colonie INNER JOIN rucher on colonie.rucher_id=rucher.id JOIN couleur on colonie.couleur=couleur.id JOIN modele on colonie.modele=modele.id  where disparition<>1 and $tab='1'  ORDER BY numero::int;
 
 

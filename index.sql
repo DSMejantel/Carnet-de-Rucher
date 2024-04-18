@@ -153,7 +153,7 @@ SELECT
     ![](./icons/pencil.svg)
 ](ruche.sql?tab=2&id='||colonie.numero||')[
     ![](./icons/tool.svg)
-](ruche.sql?tab=3&id='||colonie.numero||')' as Actions
+](intervention_col.sql?id='||colonie.numero||')' as Actions
 	 FROM colonie INNER JOIN rucher on colonie.rucher_id=rucher.id JOIN couleur on colonie.couleur=couleur.id JOIN modele on colonie.modele=modele.id  where tracing>1 and sqlpage.cookie('session') is not null ORDER BY nom, rang;
 
     
