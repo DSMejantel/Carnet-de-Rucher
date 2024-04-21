@@ -36,14 +36,13 @@ WHERE :depense is not null and $dep=1;
 select 
     'datagrid' as component;
 select 
-    'Total des dépenses' as title,
-    printf("%.2f", sum(prix)*(-1))||' €'  as description
-    FROM finances where prix<0;
-select 
     'Total des recettes' as title,
     printf("%.2f", sum(prix))||' €'   as description
     FROM finances where prix>0;
-
+select 
+    'Total des dépenses' as title,
+    printf("%.2f", sum(prix)*(-1))||' €'  as description
+    FROM finances where prix<0;
 select 
     'Bilan financier' as title,
     CASE WHEN sum(prix)<0 Then 'red' ELSE 'green'
@@ -57,22 +56,28 @@ select 'tab' as component;
 select  'Registre'  as title, 'pig-money' as icon, 1  as active, 'compta.sql?tab=1' as link, CASE WHEN $tab='1' THEN 'orange' ELSE 'green' END as color;
 select  'Enregistrer une dépense' as title, 'credit-card-pay' as icon, 0 as active, 'compta.sql?tab=2' as link, CASE WHEN $tab='2' THEN 'orange' ELSE 'green' END as color;
 select  'Enregistrer une recette' as title, 'credit-card-refund' as icon, 0 as active, 'compta.sql?tab=3' as link, CASE WHEN $tab='3' THEN 'orange' ELSE 'green' END as color;
-select  'Opérations neutralisées' as title, 'coin-off' as icon, 0 as active, 'compta.sql?tab=4' as link, CASE WHEN $tab='4' THEN 'orange' ELSE 'green' END as color WHERE $tab=4;
 select  'Bilans annuels' as title, 'coins' as icon, 0 as active, 'compta.sql?tab=5' as link, CASE WHEN $tab='5' THEN 'orange' ELSE 'green' END as color;
+select  'Opérations neutralisées' as title, 'coin-off' as icon, 0 as active, 'compta.sql?tab=4' as link, CASE WHEN $tab='4' THEN 'orange' ELSE 'green' END as color WHERE $tab=4;
+
 
 -- Bilan annuels
 -- Livre de comptes
 select 
-    'datagrid' as component  where $tab=5;
+    'title'   as component,
+    'Année en cours et année précédente' as contents,
+    TRUE as center,
+    3         as level
+        where $tab='5';     
 select 
-    'Total des dépenses pour '||strftime('%Y',date_created) as title,
-    printf("%.2f", sum(prix)*(-1))||' €'  as description
-    FROM finances where prix<0 and strftime('%Y',date_created) = strftime('%Y',CURRENT_DATE)  and $tab=5;
+    'datagrid' as component  where $tab=5;
 select 
     'Total des recettes pour '||strftime('%Y',date_created) as title,
     printf("%.2f", sum(prix))||' €'   as description
     FROM finances where prix>0 and strftime('%Y',date_created) = strftime('%Y',CURRENT_DATE)  and $tab=5;
-
+select 
+    'Total des dépenses pour '||strftime('%Y',date_created) as title,
+    printf("%.2f", sum(prix)*(-1))||' €'  as description
+    FROM finances where prix<0 and strftime('%Y',date_created) = strftime('%Y',CURRENT_DATE)  and $tab=5;
 select 
     'Bilan financier pour '||strftime('%Y',date_created) as title,
     CASE WHEN sum(prix)<0 Then 'red' ELSE 'green'
@@ -83,23 +88,40 @@ select
 select 
     'datagrid' as component  where $tab=5;
 select 
-    'Total des dépenses pour '||strftime('%Y',date_created) as title,
-    printf("%.2f", sum(prix)*(-1))||' €'  as description
-    FROM finances where prix<0 and strftime('%Y',date_created)::int+1 = strftime('%Y',CURRENT_DATE)::int  and $tab=5;
-select 
     'Total des recettes pour '||strftime('%Y',date_created) as title,
     printf("%.2f", sum(prix))||' €'   as description
     FROM finances where prix>0 and strftime('%Y',date_created)::int+1 = strftime('%Y',CURRENT_DATE)::int  and $tab=5;
-
+select 
+    'Total des dépenses pour '||strftime('%Y',date_created) as title,
+    printf("%.2f", sum(prix)*(-1))||' €'  as description
+    FROM finances where prix<0 and strftime('%Y',date_created)::int+1 = strftime('%Y',CURRENT_DATE)::int  and $tab=5;
 select 
     'Bilan financier pour '||strftime('%Y',date_created) as title,
     CASE WHEN sum(prix)<0 Then 'red' ELSE 'green'
     END as color,
     printf("%.2f", sum(prix))||' €'   as description
     FROM finances WHERE strftime('%Y',date_created)::int+1 = strftime('%Y',CURRENT_DATE)::int  and $tab=5;
+    
+-- Tableau pluri-annuel
+-- create a temporary table to preprocess the data
+create temporary table if not exists Bilan_Annuel(annee,recettes, dépenses);
+delete from Bilan_Annuel; 
+insert into Bilan_Annuel(annee,recettes)
+SELECT 
+  strftime('%Y',date_created),prix from finances where prix>0;
+insert into Bilan_Annuel(annee,dépenses)
+SELECT 
+  strftime('%Y',date_created),prix from finances where prix<0;  
 
-
-
+select 
+    'table' as component where $tab=5;
+SELECT 
+  annee as Année,
+  printf("%.2f", sum(recettes))||' €' as Recettes,
+  printf("%.2f", sum(dépenses)*(-1))||' €' as Dépenses,
+  printf("%.2f", sum(recettes)+sum(dépenses))||' €'  as Bilan
+    FROM Bilan_Annuel where $tab=5 group by annee;
+ 
 
 -- Enregistrer une recette
 SELECT 'form' as component,
@@ -256,7 +278,7 @@ select
     ![](./icons/coin-off.svg)
 ](./compta/compta_annulation.sql?id='||id||')' 
     END as Annuler
-    FROM finances WHERE prix<>0 and $tab='1' ORDER BY date_created;
+    FROM finances WHERE prix<>0 and $tab='1' ORDER BY date_created DESC;
     
 -- Opérations annulées
 select 
@@ -267,7 +289,6 @@ select
     TRUE    as search,
     'Montant' as align_right,
     'Paiement' as icon,
-    'Annuler' as markdown,
     'Facture' as markdown
     where $tab=4;
     
@@ -290,12 +311,7 @@ select
     END as Facture,
     facture_id as N°,
     operation as Opération,
-    printf("%.2f", prix) as Montant,
-    CASE WHEN $group_id=3
-    THEN '[
-    ![](./icons/coin-off.svg)
-](./compta/compta_annulation.sql?id='||id||')' 
-    END as Annuler
-    FROM finances WHERE prix=0 and $tab=4 ORDER BY date_created;
+    printf("%.2f", prix) as Montant
+    FROM finances WHERE prix=0 and $tab=4 ORDER BY date_created DESC;
 
 

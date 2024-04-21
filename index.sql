@@ -121,14 +121,11 @@ SELECT
     CASE WHEN tracing=2
     THEN '[
     ![](./icons/alert-orange.svg)
-]()'
+](ruche.sql?tab=1&id='||colonie.numero||')'
     WHEN tracing=3
     THEN '[
     ![](./icons/alert-red.svg)
-]()'
-    ELSE '[
-    ![](./icons/alert-green.svg)
-]()'
+](ruche.sql?tab=1&id='||colonie.numero||')'
     END as Alerte,
     numero as Num,
     '[
@@ -138,7 +135,7 @@ SELECT
     rang as Rang,
     '[
     ![](./icons/archive_'||code||'.svg)
-]()' as Ruche,
+](ruche.sql?tab=1&id='||colonie.numero||')' as Ruche,
     type as Ruche,
     strftime('%d/%m/%Y',début) as Début,
     '[
