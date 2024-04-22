@@ -39,7 +39,7 @@ CREATE TABLE miel(
 );
 CREATE TABLE production(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    annee INTEGER,
+    annee DATE,
     rucher_id INTEGER REFERENCES rucher(id),
     produit INTEGER,
     total INTEGER,
