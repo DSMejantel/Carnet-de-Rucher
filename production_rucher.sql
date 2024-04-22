@@ -31,10 +31,10 @@ SELECT
     'Récolte' as id,
     ''     as validate;
     
-    SELECT 'Année' AS label, 'calendar-event' as prefix_icon, 'annee' AS name, 'number' as type, 2 as width, TRUE as required;
+    SELECT 'Année' AS label, 'calendar-event' as prefix_icon, 'annee' AS name, 'date' as type, 3 as width, TRUE as required;
     --select 'hidden' as type, 'rucher_id' as name, $id as value;
     SELECT 'Type de miel' AS label, 'produit' AS name, 'select' as type, 4 as width, json_group_array(json_object("label" , categorie, "value", id )) as options FROM (select id, categorie FROM miel);
-    SELECT 'Total (en kg)' AS label, 'total' AS name, 'number' as type, 'weight' as prefix_icon, TRUE as required, 3 as width, TRUE as required;
+    SELECT 'Total (en kg)' AS label, 'total' AS name, 'number' as type, 'weight' as prefix_icon, TRUE as required, 2 as width, TRUE as required;
      SELECT 'Lot' AS label, 'lot' AS name, 'text' as type, 'barcode' as prefix_icon, TRUE as required, 3 as width;
 
 select 

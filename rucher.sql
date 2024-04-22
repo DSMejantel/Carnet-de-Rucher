@@ -218,7 +218,8 @@ SELECT 'table' as component,
 	'Actions' as markdown
 	WHERE $tab='5';
 SELECT 
-    annee   as Année,
+    strftime('%Y',annee) as Année,
+    strftime('%d/%m/%Y',annee)     as Récolte,
     categorie as Production,
     lot as Lot,
     total   as Total, 
@@ -232,20 +233,19 @@ select
     'chart'    as component,
     'Récoltes' as title,
     'bar'      as type,
-    --TRUE       as stacked,
+    --TRUE       as time,
     TRUE as labels,
-    --TRUE       as toolbar,
+    TRUE       as toolbar,
     $xticks as xticks,
     "Années" as xtitle
      where $tab='5';
 select 
     categorie as series,
-    annee as x,
-    total  as y
-    FROM production JOIN miel on production.produit=miel.id where rucher_id=$id and $tab='5' order by annee;
+    strftime('%Y',annee) as x,
+    sum(total)  as y
+    FROM production JOIN miel on production.produit=miel.id where rucher_id=$id and $tab='5' group by strftime('%Y',annee), categorie order by annee;
 
 -- Ruches 
-
 --Légende
 select 
     'alert' as component,

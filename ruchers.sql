@@ -80,13 +80,14 @@ select
     'area'      as type,
     'ystep' = 25,
     TRUE       as stacked,
+    --TRUE as time,
     TRUE as labels
     where $tab='3';
 select 
     rucher.nom as series,
-    annee   as x,
+    strftime('%Y',annee)   as x,
     sum(coalesce(total,0)) as value
-    FROM production JOIN miel on production.produit=miel.id join rucher on rucher.id=production.rucher_id where $tab='3' group by annee, rucher.id;
+    FROM production JOIN miel on production.produit=miel.id join rucher on rucher.id=production.rucher_id where $tab='3' group by strftime('%Y',annee), rucher.id;
     
         
 --Carte   
