@@ -8,7 +8,7 @@ SELECT 'redirect' AS component,
         WHERE $group_id<'3';
 
     -- Mettre à jour le compte modifié dans la base
- UPDATE user_info SET nom=$nom, prenom=$prenom, tel=$tel, courriel=$courriel, groupe=$groupe WHERE username=$id and $nom is not null
+ UPDATE user_info SET nom=:nom, prenom=:prenom, tel=:tel, courriel=:courriel, groupe=:groupe WHERE username=$id and :nom is not null
  RETURNING
    'redirect' AS component,
    'comptes.sql' as link;
