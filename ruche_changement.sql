@@ -43,6 +43,9 @@ SELECT
 	
 -- Modifier les infos de la ruche
 SET rucher_edit=(SELECT rucher_id from colonie where numero = $id);
+SET rang_edit=(SELECT rang from colonie where numero = $id);
+SET couleur_edit=(SELECT couleur from colonie where numero = $id);
+SET modele_edit=(SELECT modele from colonie where numero = $id);
 
     SELECT 
     'form' as component,
@@ -52,8 +55,9 @@ SET rucher_edit=(SELECT rucher_id from colonie where numero = $id);
     'Recommencer'           as reset;
     
     SELECT 'Numéro' AS label, 'numero_Div' AS name, 1 as width;
-    SELECT 'Rucher' AS label, 'rucher_Div' AS name, 'select' as type, 4 as width, $rucher_edit::int as value, json_group_array(json_object("label" , nom, "value", id )) as options FROM (select * FROM rucher ORDER BY nom ASC);
-    SELECT 'Rangée' AS label, 'rang_Div' AS name, 'number' as type, 2 as width;
-    SELECT 'couleur' AS name, 'select' as type, 6 as width, json_group_array(json_object("label", coloris, "value", id)) as options FROM (select * FROM couleur ORDER BY coloris ASC);
-    SELECT 'modele' AS name, 'select' as type, 6 as width, json_group_array(json_object("label", type, "value", id)) as options FROM (select * FROM modele ORDER BY type ASC);
+    SELECT 'Rucher' AS label, 'rucher_Div' AS name, 'select' as type, 2 as width, CAST ($rucher_edit as integer) as value, json_group_array(json_object("label" , nom, "value", id )) as options FROM (select * FROM rucher ORDER BY nom ASC);
+    SELECT 'Rangée' AS label, 'rang_Div' AS name, 'number' as type, 2 as width, CAST ($rang_edit as integer) as value;
+    SELECT 'Position' AS label, 'position' AS name, 'number' as type, 2 as width , position as value from colonie where numero = $id;
+    SELECT 'couleur' AS name, 'select' as type, 3 as width, CAST ($couleur_edit as integer) as value, json_group_array(json_object("label", coloris, "value", id)) as options FROM (select * FROM couleur ORDER BY coloris ASC);
+    SELECT 'modele' AS name, 'select' as type, 3 as width, CAST ($modele_edit as integer) as value, json_group_array(json_object("label", type, "value", id)) as options FROM (select * FROM modele ORDER BY type ASC);
 

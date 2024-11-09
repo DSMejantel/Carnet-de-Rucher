@@ -57,5 +57,33 @@ SELECT
   printf("%.2f", sum(dépenses)*(-1))||' €' as Dépenses,
   printf("%.2f", sum(recettes)+sum(dépenses))||' €'  as Bilan
     FROM Bilan_Annuel group by annee;
+    
+select 
+    'chart' as component,
+    'red' as color,
+    TRUE as labels,
+    'green' as color,
+    'bar'      as type;
+select 
+    categorie as series,
+    strftime('%Y',date_created) as x,
+    CASE WHEN sum(prix)>0
+    THEN  sum(prix)
+    ELSE sum(prix)*(-1)
+    END as y
+    FROM finances group by strftime('%Y',date_created), categorie order by date_created;
+
+select 
+    'chart' as component,
+    'Historique du solde' as title,
+    'area'  as type,
+    'red'   as color,
+    1 as marker,
+    TRUE as time,
+    1000 as ymax;   
+select 
+    strftime('%Y-%m-%dT%H:%M:%fZ',date_created) as x,
+    printf("%.2f",(SUM(prix) OVER(order by date_created))) as y
+    FROM finances where prix<>0 ; 
 
 

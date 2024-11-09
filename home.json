@@ -3,6 +3,7 @@
     "title": "Suivi de Rucher",
     "link": "/",
     "icon": "flower",
+    "layout": "fluid",
     "language":"fr-FR",
     "norobot": "TRUE",
     "menu_item": [

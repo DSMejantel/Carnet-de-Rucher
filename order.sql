@@ -13,7 +13,7 @@ SELECT 'dynamic' AS component, sqlpage.read_file_as_text('menu.json') AS propert
     3         as level;
     
 -- Mettre à jour le total de la facture 
-SET  facture_total=(SELECT SUM(quantity * prix)
+SET  facture_total=(SELECT (SUM(quantity * prix)-remise)
 FROM order_items
 INNER JOIN produits ON produits.id = order_items.product_id
 WHERE order_id = $id and $tab=3);
@@ -48,13 +48,20 @@ SELECT 'alert' as component,
 SELECT 'list' AS component,
     'Résumé de la commande' AS title where $tab=3;
 SELECT 
-    quantity || ' x ' || produits || ' de ' || categorie || ' (Lot :  ' || lot || ' ) ' AS title,
-    'Sous-total: ' || quantity || ' x ' || prix || ' € = ' || (quantity * prix) || ' €' AS description
+        quantity || ' x ' || produits || ' de ' || categorie  AS title,
+        '(Lot :  ' || lot || ' ) '||'Sous-total: ' || (quantity * prix) || ' €'  AS description
 FROM order_items
 INNER JOIN produits ON produits.id = order_items.product_id
 WHERE order_id = $id and $tab=3;
 SELECT 
-    'Total: ' || SUM(quantity * prix) || ' €' AS title,
+    CASE WHEN  coalesce(remise,0)>0 THEN ' Remise : ' ELSE '' END AS title,
+    sum(distinct remise) || ' €' AS description
+FROM order_items
+WHERE order_id = $id and $tab=3  and remise>0;
+SELECT 
+    'Total: ' || (SUM(quantity * prix)-remise) || ' €' AS title,
+    'Le Rucher de Méjantel'
+        ||CHAR(13)||CHAR(13)||'SIRET :  820 439 974 00016' AS description_md,
     'red' AS color,
     TRUE AS active
 FROM order_items
@@ -63,18 +70,25 @@ WHERE order_id = $id and $tab=3;
 
 --- Détails facture sélectionée
 SELECT 'list' AS component,
-    'Récapitulatif de la facture n°'||id|| ' pour ' || customer_name AS title 
+    'Récapitulatif de la facture n°'||id|| ' pour ' || customer_name AS title
     FROM orders
 WHERE id = $facture and $tab=4;
 SELECT 
-    quantity || ' x ' || produits || ' de ' || categorie || ' (Lot :  ' || lot || ' ) ' AS title,
-    'Sous-total: ' || quantity || ' x ' || prix || ' € = ' || (quantity * prix) || ' €' AS description
+    quantity || ' x ' || produits || ' de ' || categorie  AS title,
+    '(Lot :  ' || lot || ' ) '||'Sous-total: ' || (quantity * prix) || ' €' AS description
 FROM order_items
 INNER JOIN produits ON produits.id = order_items.product_id
 WHERE order_id = $facture and $tab=4;
 SELECT 
-    'Total: ' ||SUM(quantity * prix) || ' €' AS title,
-    TRUE AS active
+    CASE WHEN  coalesce(remise,0)>0 THEN ' Remise : ' ELSE '' END AS title,
+    CASE WHEN  coalesce(remise,0)>0 THEN  sum(distinct remise) || ' €' ELSE '' END AS description
+FROM order_items
+WHERE order_id = $facture and $tab=4;
+SELECT 
+    'Total : ' ||(SUM(quantity * prix)-remise) || ' €' AS title,
+    TRUE AS active,
+        'Le Rucher de Méjantel'
+        ||CHAR(13)||CHAR(13)||'SIRET :  820 439 974 00016' AS description_md
 FROM order_items
 INNER JOIN produits ON produits.id = order_items.product_id
 WHERE order_id = $facture and $tab=4;
@@ -94,7 +108,7 @@ select
     id as N°,
         '[
     ![](./icons/receipt-2.svg)
-](order.sql?facture='||id||'&tab=4)' as Facture,
+](order.sql?facture='||id||'&tab=4 "Visualiser la facture")' as Facture,
     strftime('%d/%m/%Y',date_created) as Date,
     customer_name as Client,
     CASE WHEN customer_mode=1 THEN 'Espèces'
@@ -102,7 +116,7 @@ select
     ELSE 'Virement' 
     END as Paiement,
     printf("%.2f", customer_total) as "Total"
-    FROM orders WHERE $tab='1' ORDER BY date_created;
+    FROM orders WHERE $tab='1' ORDER BY date_created DESC;
 
 
 

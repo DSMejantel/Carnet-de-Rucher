@@ -21,11 +21,15 @@ select  'Ruches' as title, 'archive' as icon, 0 as active, 'elevage.sql?tab=2' a
 -- Onglets : Interventions sur ruchers
 select 
     'table' as component,
+    'Rucher' as markdown,
     TRUE    as sort,
     TRUE    as search
     where $tab='1';
 select 
     strftime('%d/%m/%Y',horodatage) as date,
+        '[
+    ![](./icons/grip-horizontal.svg)
+](rucher.sql?tab=1&id='||rucher_id||' "Voir le rucher")' as Rucher,
     nom as Rucher,
     action as Interventions,
     details as Descriptions

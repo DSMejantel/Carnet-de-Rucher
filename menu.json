@@ -7,6 +7,12 @@
     "language":"fr-FR",
     "norobot": "TRUE",
     "menu_item": [
+        {"title": "Photos", "submenu": [
+            {"link": "diaporama.sql", "title": "Diaporama"},
+            {"link": "album.sql", "title": "Album"},
+            {"link": "album_gestion.sql", "title": "Gestion des photos"},
+            {"link": "upload_image_form.sql", "title": "Ajouter une photo"}
+        ]},
         {"title": "Ruchers", "submenu": [
             {"link": "ruchers.sql?tab=1", "title": "Liste complète"},
             {"link": "ruchers.sql?tab=3", "title": "Suivis et bilans"},

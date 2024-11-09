@@ -10,12 +10,14 @@ SELECT 'dynamic' AS component, sqlpage.read_file_as_text('menu.json') AS propert
 SET tab=coalesce($tab,'1');
 select 'tab' as component;
 select  'Colonies'  as title, 'archive' as icon, 1  as active, 'ruches.sql?tab=1&id=1' as link, CASE WHEN $tab='1' THEN 'orange' ELSE 'green' END as color;
+select  'Mortalité'  as title, 'archive-off' as icon, 0  as active, 'ruches.sql?tab=3&id=3' as link, CASE WHEN $tab='3' THEN 'orange' ELSE 'green' END as color;
 select  'Ajouter' as title, 'square-plus' as icon, 0 as active, 'ruches.sql?tab=2&id=2' as link, CASE WHEN $tab='2' THEN 'orange' ELSE 'green' END as color;
+
 
  
 -- Ruches
 -- Enregistrer la colonie dans la base
- INSERT INTO colonie(numero, rucher_id, rang, couleur, modele, début, reine, souche, caractere, info, disparition) SELECT $numero, $rucher, $rang, $couleur, $modele, $début, $reine, $souche, $caractere, $info, 0 WHERE $numero IS NOT NULL;
+ INSERT INTO colonie(numero, rucher_id, rang, couleur, modele, début, reine, souche, caractere, info, disparition) SELECT :numero, :rucher, :rang, :couleur, :modele, :début, :reine, :souche, :caractere, :info, 0 WHERE :numero IS NOT NULL;
 
 -- Formulaire d'ajout
     SELECT 
@@ -43,7 +45,7 @@ select  'Ajouter' as title, 'square-plus' as icon, 0 as active, 'ruches.sql?tab=
     
 -- Liste
 SELECT 'table' as component,
-	1 as sort,
+	TRUE as sort,
 	'Alerte' as markdown,
 	'Actions' as markdown,
 	'Reine' as markdown,
@@ -81,11 +83,57 @@ SELECT
     info as infos,
 '[
     ![](./icons/eye.svg)
-](ruche.sql?tab=1&id='||colonie.numero||')[
+](ruche.sql?tab=1&id='||colonie.numero||' "Visualiser")[
     ![](./icons/pencil.svg)
-](ruche.sql?tab=2&id='||colonie.numero||')[
+](ruche.sql?tab=2&id='||colonie.numero||' "Mettre à jour")[
     ![](./icons/tool.svg)
-](intervention_col.sql?id='||colonie.numero||')' as Actions
-	 FROM colonie INNER JOIN rucher on colonie.rucher_id=rucher.id JOIN couleur on colonie.couleur=couleur.id JOIN modele on colonie.modele=modele.id  where disparition<>1 and $tab='1'  ORDER BY numero::int;
+](intervention_col.sql?id='||colonie.numero||' "Noter une intervention")' as Actions
+	 FROM colonie INNER JOIN rucher on colonie.rucher_id=rucher.id JOIN couleur on colonie.couleur=couleur.id JOIN modele on colonie.modele=modele.id  where disparition<>1 and $tab='1'  ORDER BY numero;
 
+-- Liste des ruches disparues
+SELECT 'table' as component,
+	1 as sort,
+	TRUE as search,	
+	'Alerte' as markdown,
+	'Actions' as markdown,
+	'Reine' as markdown,
+	'Rucher' as markdown,
+	'Ruche' as markdown where $tab='3';
+SELECT 
+    CASE WHEN tracing=2
+    THEN '[
+    ![](./icons/alert-orange.svg)
+]()'
+    WHEN tracing=3
+    THEN '[
+    ![](./icons/alert-red.svg)
+]()'
+    ELSE '[
+    ![](./icons/alert-green.svg)
+]()'
+    END as Alerte,
+    numero as Num,
+    '[
+    ![](./icons/grip-horizontal.svg)
+](rucher.sql?tab=1&id='||colonie.rucher_id||')' as Rucher,
+    nom as Rucher,
+    '[
+    ![](./icons/archive_'||code||'.svg)
+](ruche.sql?tab=1&id='||colonie.numero||')' as Ruche,
+    type as Ruche,
+    strftime('%d/%m/%Y',début) as Début,
+    strftime('%d/%m/%Y',fin) as Disparition,
+    '[
+    ![](./icons/circle-number-'||substr( reine, -1,1 )||'.svg)
+]()' as Reine,
+    reine as Reine,
+    info as infos,
+'[
+    ![](./icons/eye.svg)
+](ruche.sql?tab=1&id='||colonie.numero||' "Visualiser")[
+    ![](./icons/pencil.svg)
+](ruche.sql?tab=2&id='||colonie.numero||' "Mettre à jour")[
+    ![](./icons/tool.svg)
+](intervention_col.sql?id='||colonie.numero||' "Noter une intervention")' as Actions
+	 FROM colonie INNER JOIN rucher on colonie.rucher_id=rucher.id JOIN couleur on colonie.couleur=couleur.id JOIN modele on colonie.modele=modele.id  where disparition=1 and $tab='3'  ORDER BY numero;
 

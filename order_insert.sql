@@ -6,11 +6,12 @@ SET group_id = (SELECT user_info.groupe FROM login_session join user_info on use
 INSERT INTO orders(customer_name, customer_mode) 
 VALUES (:Name, :paiement);
 
-INSERT INTO order_items(order_id, quantity, product_id)
+INSERT INTO order_items(order_id, quantity, product_id, remise)
 SELECT
     last_insert_rowid(),
     CAST(quantity.value AS INTEGER),
-    CAST(product.value AS INTEGER)
+    CAST(product.value AS INTEGER),
+    coalesce(:remise,0)
 FROM JSON_EACH(:product_quantity) quantity
 INNER JOIN JSON_EACH(:product_id) product USING (key)
 WHERE CAST(quantity.value AS INTEGER) > 0

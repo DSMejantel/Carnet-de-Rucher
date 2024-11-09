@@ -8,39 +8,39 @@ SELECT 'dynamic' AS component, sqlpage.read_file_as_text('menu.json') AS propert
 
 -- ajouter un modèle de ruche
 INSERT INTO modele(type)
-SELECT $type WHERE $type IS NOT NULL;
+SELECT :type WHERE :type IS NOT NULL;
 
 -- ajouter une couleur de ruche
 INSERT INTO couleur(coloris, code)
-SELECT $couleur, $couleur WHERE $couleur IS NOT NULL;
+SELECT :couleur, :couleur WHERE :couleur IS NOT NULL;
 
-UPDATE couleur SET coloris='bleu azur' WHERE coloris='azure' and $couleur is not null
-UPDATE couleur SET coloris='bleu clair' WHERE coloris='indigo' and $couleur is not null
-UPDATE couleur SET coloris='bleu foncé' WHERE coloris='blue' and $couleur is not null
-UPDATE couleur SET coloris='violet' WHERE coloris='purple' and $couleur is not null
-UPDATE couleur SET coloris='rouge' WHERE coloris='red' and $couleur is not null
-UPDATE couleur SET coloris='jaune' WHERE coloris='yellow' and $couleur is not null
-UPDATE couleur SET coloris='vert clair' WHERE coloris='lime' and $couleur is not null
-UPDATE couleur SET coloris='vert' WHERE coloris='green' and $couleur is not null
-UPDATE couleur SET coloris='gris' WHERE coloris='vk' and $couleur is not null
+UPDATE couleur SET coloris='bleu azur' WHERE coloris='azure' and :couleur is not null
+UPDATE couleur SET coloris='bleu clair' WHERE coloris='indigo' and :couleur is not null
+UPDATE couleur SET coloris='bleu foncé' WHERE coloris='blue' and :couleur is not null
+UPDATE couleur SET coloris='violet' WHERE coloris='purple' and :couleur is not null
+UPDATE couleur SET coloris='rouge' WHERE coloris='red' and :couleur is not null
+UPDATE couleur SET coloris='jaune' WHERE coloris='yellow' and :couleur is not null
+UPDATE couleur SET coloris='vert clair' WHERE coloris='lime' and :couleur is not null
+UPDATE couleur SET coloris='vert' WHERE coloris='green' and :couleur is not null
+UPDATE couleur SET coloris='gris' WHERE coloris='vk' and :couleur is not null
 
 -- ajouter une categorie de miel
 INSERT INTO miel(categorie)
-SELECT $categorie WHERE $categorie IS NOT NULL;
+SELECT :categorie WHERE :categorie IS NOT NULL;
 
 -- ajouter un type d'intervention
 INSERT INTO intervention(action)
-SELECT $action WHERE $action IS NOT NULL;
+SELECT :action WHERE :action IS NOT NULL;
 
 -- ajouter une origine d''essaim
 INSERT INTO provenance(origine)
-SELECT $origine WHERE $origine IS NOT NULL;
+SELECT :origine WHERE :origine IS NOT NULL;
 
 
 -- ajouter un élément de ruche
 
 INSERT INTO materiel(element)
-SELECT $element WHERE $element IS NOT NULL;
+SELECT :element WHERE :element IS NOT NULL;
 
 --Onglets
 SET tab=coalesce($tab,'1');
@@ -78,7 +78,7 @@ select
     '/couleur/form.sql?_sqlpage_embed' as embed
     where $tab='2';
 
---Couleur de ruche   
+--Type d'intervention sur une ruche   
 select 
     'card' as component,
      2      as columns

@@ -6,8 +6,25 @@ SET group_id = (SELECT user_info.groupe FROM login_session join user_info on use
 --Menu
 SELECT 'dynamic' AS component, sqlpage.read_file_as_text('menu.json') AS properties;
 
--- Description
-SELECT 'table' as component,
+-- Description / Titre de la page Rucher
+SELECT 'card' as component,
+	1 as columns;
+SELECT 
+	nom as title,
+	'orange'   as background_color,
+	'Altitude : '||Alt||'m. '||description as description,
+	'[
+    ![](./icons/eye.svg)
+](rucher.sql?tab=1&id='||id||' "Détails du rucher")[
+    ![](./icons/archive.svg)
+](rucher.sql?tab=2&id='||id||' "Voir les colonies")[
+    ![](./icons/tool.svg)
+](intervention_rucher.sql?tab=4&id='||id||' "Noter une intervention")[
+    ![](./icons/milk.svg)
+](production_rucher.sql?tab=5&id='||id||' "Enregistrer une production")' as footer_md
+	 FROM rucher WHERE id=$id;
+-------------------------------------------
+/*SELECT 'table' as component,
 	'Actions' as markdown;
 SELECT 
 	nom as Rucher,
@@ -23,7 +40,7 @@ SELECT
     ![](./icons/milk.svg)
 ](production_rucher.sql?tab=5&id='||id||')' as Actions
 	 FROM rucher WHERE id=$id;
-
+*/
 -- Ajouter une intervention
     SELECT 
     'form' as component,

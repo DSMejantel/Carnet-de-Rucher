@@ -25,7 +25,9 @@ SELECT 'form' as component,
     'green' as validate_color,
     'order_insert.sql' as action;
 
-SELECT 'Name' as name, 'Nom' as label, TRUE as required, 'Nom du client' AS placeholder where $tab=2;
+SELECT 'Name' as name, 'Nom' as label, TRUE as required, 'Nom du client' AS placeholder, 12 as width where $tab=2;
+
+--
 select 
     'paiement' as name,
     'radio' as type,
@@ -42,20 +44,30 @@ select
     'paiement'  as name,
     'radio'  as type,
     3        as value,
-    'Virement' as label,
+    'Virement ou CB' as label,
     4 as width;
 SELECT 'product_quantity[]' AS name,
-    categorie || ' en pots de '||produits AS label,
+    categorie || ' en pots de '||produits||' (Lot : '||lot||')' AS label,
     coalesce(reste-vendus,reste) ||' en stock. ' || printf("%.2f", prix) || ' € l''unité.' as description,
     'number' AS type,
-    1 AS step,
+    produits||' - '||lot as prefix,
+    1 as step,
     0 as min,
     coalesce(reste-vendus,reste) as max,
+    4 as width,
     0 as value
-FROM produits LEFT JOIN gest_inventaire on produits.id=gest_inventaire.articles WHERE vente=1 and nombre-coalesce(vendus,0)>0 ORDER BY id;
-
+FROM produits LEFT JOIN gest_inventaire on produits.id=gest_inventaire.articles WHERE vente=1 and nombre-coalesce(vendus,0)>0 ORDER BY produits;
+-- Remise
+SELECT 'remise' AS name,
+    'Remise' AS label,
+    'number' AS type,
+    'tax-euro' as prefix_icon,
+    1 AS step,
+    0 as min,
+    4 as width,
+    '0' as value;
 -- We include the product ids in the form as hidden fields, so that we can use them for the insertion.
 SELECT 'product_id[]' AS name, '' AS label, 'hidden' AS type, id as value
-FROM produits LEFT JOIN gest_inventaire on produits.id=gest_inventaire.articles WHERE vente=1  and nombre-coalesce(vendus,0)>0 ORDER BY id;
+FROM produits LEFT JOIN gest_inventaire on produits.id=gest_inventaire.articles WHERE vente=1  and nombre-coalesce(vendus,0)>0 ORDER BY produits;
 
 

@@ -31,13 +31,19 @@ select
 select 
     'Éditer mon Compte' as title,
     'comptes_user.sql' as link,
-    'user-filled' as icon,
+    'pencil' as icon,
     'green' as outline;
 select 
     'Changer mon mot de passe' as title,
     'comptes_user_password.sql' as link,
     'lock' as icon,
     'green' as outline;
+select 
+    'Administration des utilisateurs' as title,
+    './comptes/comptes.sql' as link,
+    'user' as icon,
+    'orange' as outline
+    where $group_id=3;
    
 -- Profil
 SET user_edit = (SELECT login_session.username FROM login_session join user_info on user_info.username=login_session.username WHERE id = sqlpage.cookie('session'));

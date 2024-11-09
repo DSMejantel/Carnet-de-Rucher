@@ -8,7 +8,7 @@ SELECT 'dynamic' AS component, sqlpage.read_file_as_text('menu.json') AS propert
 
 -- ajouter un rucher
 INSERT INTO rucher(nom, description, Lon, Lat, Alt)
-SELECT $nom, $description, $Lon, $Lat, $alt where $nom IS NOT NULL;
+SELECT :nom, :description, :Lon, :Lat, :alt where :nom IS NOT NULL;
 
 --Onglets
 SET tab=coalesce($tab,'1');
@@ -21,6 +21,39 @@ select  'Carte' as title, 'map' as icon, 1 as active, 'ruchers.sql?tab=4' as lin
    
 
 -- Liste des ruchers
+select 
+    'columns' as component where $tab='1';
+select 
+    distinct nom as title,
+    (SELECT count(distinct numero) FROM colonie WHERE CAST(disparition as integer)<>1 and rucher.id=colonie.rucher_id) as value,
+    CASE WHEN (SELECT count(distinct numero) FROM colonie WHERE CAST(disparition as integer)<>1 and rucher.id=colonie.rucher_id)<2
+    	THEN ' ruche' 
+    	ELSE ' ruches'  END as small_text,
+    	'[
+    ![](./icons/eye.svg)
+](rucher.sql?tab=1&id='||id||' "Détails du rucher")[
+    ![](./icons/archive.svg)
+](rucher.sql?tab=2&id='||id||' "Voir les colonies")[
+    ![](./icons/tool.svg)
+](intervention_rucher.sql?tab=4&id='||id||' "Noter une intervention")[
+    ![](./icons/milk.svg)
+](production_rucher.sql?tab=5&id='||id||' "Enregistrer une production")' as description_md,
+ 
+    'rucher.sql?tab=1&id='||rucher.id          as link,
+    CASE WHEN (SELECT count(distinct numero) FROM colonie WHERE tracing=3 and rucher.id=colonie.rucher_id and disparition<>1)>0
+    	THEN 'red'
+    	WHEN (SELECT count(distinct numero) FROM colonie WHERE tracing=2 and rucher.id=colonie.rucher_id and disparition<>1)>0
+    	THEN 'orange'
+    	ELSE 'green' 
+    	END as value_color,
+    json_array(
+    json_object('icon','mountain','color','green','description',Alt||'m'),
+    json_object('icon','photo','color','green','description',description)
+    ) as item,
+     'Voir le rucher'     as button_text,
+    'vk' as button_color
+    FROM rucher left join colonie on rucher.id=colonie.rucher_id where $tab='1' GROUP BY rucher.id;
+
 SELECT 'table' as component,
 	'Actions' as markdown
 	where $tab='1';
@@ -29,14 +62,14 @@ SELECT
 	alt as Altitude,
 	description as Description,
 	'[
-    ![](./icons/grip-horizontal.svg)
-](rucher.sql?tab=1&id='||id||')[
+    ![](./icons/eye.svg)
+](rucher.sql?tab=1&id='||id||' "Détails du rucher")[
     ![](./icons/archive.svg)
-](rucher.sql?tab=2&id='||id||')[
+](rucher.sql?tab=2&id='||id||' "Voir les colonies")[
     ![](./icons/tool.svg)
-](intervention_rucher.sql?tab=4&id='||id||')[
+](intervention_rucher.sql?tab=4&id='||id||' "Noter une intervention")[
     ![](./icons/milk.svg)
-](production_rucher.sql?tab=5&id='||id||')' as Actions
+](production_rucher.sql?tab=5&id='||id||' "Enregistrer une production")' as Actions
 	 FROM rucher where $tab='1'  ORDER by nom;
 
 
@@ -61,14 +94,14 @@ SELECT
     where $tab='3';
 select 
     distinct nom as title,
-    CASE WHEN (SELECT count(distinct numero) FROM colonie WHERE disparition::int<>1 and rucher.id=colonie.rucher_id)<2
-    	THEN (SELECT count(distinct numero)||' ruche' FROM colonie WHERE disparition::int<>1 and rucher.id=colonie.rucher_id)
-    	ELSE (SELECT count(distinct numero)||' ruches' FROM colonie WHERE disparition::int<>1 and rucher.id=colonie.rucher_id) END   as description,
-    CASE WHEN (SELECT count(numero) FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id  and disparition::int<>1)<2
-    	THEN (SELECT count(numero)||' ruche à surveiller' FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id  and disparition::int<>1) 
-    	ELSE (SELECT count(distinct numero)||' ruches à surveiller' FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id  and disparition::int<>1) END as footer,
+    CASE WHEN (SELECT count(distinct numero) FROM colonie WHERE disparition<>1 and rucher.id=colonie.rucher_id)<2
+    	THEN (SELECT count(distinct numero)||' ruche' FROM colonie WHERE disparition<>1 and rucher.id=colonie.rucher_id)
+    	ELSE (SELECT count(distinct numero)||' ruches' FROM colonie WHERE disparition<>1 and rucher.id=colonie.rucher_id) END   as description,
+    CASE WHEN (SELECT count(numero) FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id  and disparition<>1)<2
+    	THEN (SELECT count(numero)||' ruche à surveiller' FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id  and disparition<>1) 
+    	ELSE (SELECT count(distinct numero)||' ruches à surveiller' FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id  and disparition<>1) END as footer,
     	CASE WHEN (SELECT count(distinct tracing) FROM colonie WHERE tracing>1 and rucher.id=colonie.rucher_id)>0
-    	THEN 'alert-triangle-filled'              END    as icon,
+    	THEN 'alert-triangle'              END    as icon,
     	'orange' as color,
     	'rucher.sql?tab=1&id='||rucher.id as link
     FROM rucher left join colonie on rucher.id=colonie.rucher_id where $tab='3' ;

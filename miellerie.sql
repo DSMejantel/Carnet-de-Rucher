@@ -16,14 +16,14 @@ SELECT 'dynamic' AS component, sqlpage.read_file_as_text('menu.json') AS propert
 INSERT INTO produits(lot, produits, categorie, nombre, reste, vente, prix, DDM)
 SELECT 
     $lot as lot,
-    $produits as produits,
-    $categorie as categorie,
-    $nombre as nombre,  
-        $nombre as reste,   
-    coalesce($vente,0) as vente,
-    $prix as prix,
-    $DDM as DDM
-    WHERE $produits IS NOT NULL and $tab IN (2,3); 
+    :produits as produits,
+    :categorie as categorie,
+    :nombre as nombre,  
+        :nombre as reste,   
+    coalesce(:vente,0) as vente,
+    :prix as prix,
+    :DDM as DDM
+    WHERE :produits IS NOT NULL and $tab IN (2,3); 
     
        
 --Onglets
@@ -50,14 +50,14 @@ select
     annee as Année,
     lot as Lot,
     nom as Rucher,
-    produit as Miel,
+    categorie as Miel,
     total as Quantité,
     '[
     ![](./icons/milk.svg)
-](miellerie.sql?tab=3&lot='||lot||')[
+](miellerie.sql?tab=3&lot='||lot||' "Ajouter un produit issu de ce lot")[
     ![](./icons/basket-search.svg)
-](miellerie.sql?tab=5&lotn='||lot||')' as Produits
-    FROM production JOIN rucher on production.rucher_id=rucher.id WHERE $tab='1' ORDER BY annee, lot;
+](miellerie.sql?tab=5&lotn='||lot||' "Traçabilité du lot")' as Produits
+    FROM production JOIN rucher on production.rucher_id=rucher.id JOIN miel on miel.id=production.produit WHERE $tab='1' ORDER BY annee, lot;
     
 -- Liste des produits
 select 
@@ -80,13 +80,14 @@ SELECT 'table' as component,
     'Dispo' as markdown
             where $tab='2';
 SELECT 
+    id as _sqlpage_id,
     lot as Lot,
     produits as Liste,
     categorie as Miel,
     DDM as DDM,
     nombre as Total,
     coalesce(reste-vendus,reste) as Quantité,
-    CASE WHEN vente::int=1
+    CASE WHEN vente=1
     THEN '[
     ![](./icons/select.svg)
 ](/catalogue/indisponible.sql?id='||produits.id||')' 
@@ -96,13 +97,13 @@ ELSE '[
 END as Dispo,
     '[
     ![](./icons/milk.svg)
-](miellerie.sql?tab=3&lot='||lot||')
+](miellerie.sql?tab=3&lot='||lot||' "Ajouter un produit issu de ce lot")
      [
-    ![](./icons/triangle.svg)
-](/catalogue/ajouter_produit.sql?id='||produits.id||')
+    ![](./icons/circle-plus.svg)
+](/catalogue/ajouter_produit.sql?id='||produits.id||' "Ajouter un produit de cette gamme")
      [
-    ![](./icons/triangle-inverted.svg)
-](/catalogue/enlever_produit.sql?id='||produits.id||')' as Produits,
+    ![](./icons/circle-minus.svg)
+](/catalogue/enlever_produit.sql?id='||produits.id||' "Retirer un produit de cette gamme")' as Produits,
     printf("%.2f", prix) as Prix
  FROM produits LEFT JOIN gest_inventaire on produits.id=gest_inventaire.articles WHERE $tab='2';   
     
