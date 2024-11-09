@@ -33,7 +33,7 @@ SET prod = (SELECT produit from production where production.id=$production);
     ''     as validate;
     
     SELECT 'Année' AS label, 'calendar-event' as prefix_icon, 'annee' AS name, 'date' as type, 3 as width, (SELECT annee from production where id=$production) as value;
-    SELECT 'Type de miel' AS label, 'produit' AS name, 'select' as type, 4 as width, $prod::int as value, json_group_array(json_object("label" , categorie, "value", id )) as options FROM (select id, categorie FROM miel);
+    SELECT 'Type de miel' AS label, 'produit' AS name, 'select' as type, 4 as width, $prod as value, json_group_array(json_object("label" , categorie, "value", id )) as options FROM (select id, categorie FROM miel);
     SELECT 'Total (en kg)' AS label, 'total' AS name, 'number' as type, 'weight' as prefix_icon, TRUE as required, 2 as width, (SELECT total from production where id=$production) as value;
      SELECT 'Lot' AS label, 'lot' AS name, 'text' as type, 'barcode' as prefix_icon, TRUE as required, 3 as width, (SELECT lot from production where id=$production) as value;
 
