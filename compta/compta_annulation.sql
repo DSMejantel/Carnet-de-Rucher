@@ -15,7 +15,7 @@ SELECT 'dynamic' AS component, sqlpage.read_file_as_text('menu.json') AS propert
 select 
     'alert'                     as component,
     'Attention !'                   as title,
-    'L''opération ne sera pas effacée totalement de la base. Son montant sera ramené à 0 et l''opération ne sera plus affichée dans le registre. Il restera possible de visualiser les opérations neutralisées sans leur montant initial.' as description,
+    'L''opération ne sera pas effacée totalement de la base. Son montant sera ramené à 0 et l''opération sera grisée dans le registre. Il restera possible de visualiser les opérations neutralisées sans leur montant initial.' as description,
     'alert-triangle'            as icon,
     'orange'                    as color;
     
@@ -31,14 +31,15 @@ select
     'pill'   as shape,
     'center' as justify;
 select 
-    'Oui' as title,
-    'compta_annulation_confirm.sql?id='||$id as link,
-    'coin-off' as icon,
-    'green' as outline; 
-select 
     'Non' as title,
     '../compta.sql?tab=1' as link,
     'arrow-back-up' as icon,
     'orange' as outline;
+select 
+    'Oui' as title,
+    'compta_annulation_confirm.sql?id='||$id as link,
+    'coin-off' as icon,
+    'green' as outline; 
+
     
 

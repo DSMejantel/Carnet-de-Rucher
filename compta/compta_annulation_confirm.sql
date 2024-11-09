@@ -9,11 +9,9 @@ SELECT 'redirect' AS component,
 
     -- Mettre à jour l'opération dans la base
     -- l'opération n'est pas supprimée mais le montant passe à zéro
-    
- UPDATE finances SET prix=0
-
  
- WHERE id=$id
+ UPDATE finances SET operation=(SELECT operation from finances WHERE id=$id)||' (Annulation '||(SELECT prix from finances WHERE id=$id)||' €)'    WHERE id=$id
+ UPDATE finances SET prix=0  WHERE id=$id
  RETURNING
    'redirect' AS component,
    '../compta.sql?tab=1' as link;
