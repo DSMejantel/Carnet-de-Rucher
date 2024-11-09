@@ -6,4 +6,4 @@ SET group_id = (SELECT user_info.groupe FROM login_session join user_info on use
  UPDATE produits SET reste=reste+1 WHERE id=$id
  RETURNING 
  'redirect' as component,
- '../miellerie.sql?tab=2' as link;
+ '../miellerie.sql?tab=2#'||$id as link;

@@ -13,7 +13,7 @@ SELECT
     categorie as Miel,
     DDM as DDM,
     reste as Dispo,
-CASE WHEN vente::int=1
+CASE WHEN vente=1
     THEN '[
     ![](./icons/select.svg)
 ](/catalogue/indisponible_lot.sql?id='||produits.id||')' 

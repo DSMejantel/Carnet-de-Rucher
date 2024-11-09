@@ -15,8 +15,8 @@ SELECT
     produits as Liste,
     categorie as Miel,
     DDM as DDM,
-    reste as Dispo,
-CASE WHEN vente::int=1
+    coalesce(reste-vendus,reste) as Dispo,
+CASE WHEN vente=1
     THEN '[
     ![](./icons/select.svg)
 ](/catalogue/indisponible_lot.sql?id='||produits.id||'&lot='||$lot||')' 
@@ -25,4 +25,4 @@ ELSE '[
 ](/catalogue/disponible_lot.sql?id='||produits.id||'&lot='||$lot||')' 
 END as Vente,
     prix as prix
- FROM produits WHERE lot=$lot;
+ FROM produits LEFT JOIN gest_inventaire on produits.id=gest_inventaire.articles WHERE lot=$lot;
