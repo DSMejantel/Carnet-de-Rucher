@@ -52,7 +52,7 @@ SET suivi = (SELECT suivi from colvisite where id=$intervention);
     'Recommencer'           as reset;
     
     SELECT 'Date' AS label, 'horodatage' AS name, 'date' as type, 3 as width, (SELECT horodatage from colvisite where id=$intervention) as value;
-    SELECT 'Intervention' AS label, 'suivi' AS name, 'select' as type, 6 as width, $suivi::int as value, json_group_array(json_object("label" , action, "value", id )) as options FROM (select id, action FROM intervention);
+    SELECT 'Intervention' AS label, 'suivi' AS name, 'select' as type, 6 as width, CAST($suivi as integer) as value, json_group_array(json_object("label" , action, "value", id )) as options FROM (select id, action FROM intervention);
     SELECT 'Inscription au registre d''élevage' AS label, 'registre' AS name, 'checkbox' as type, 1 as value, 3 as width; 
     SELECT 'Détails' AS label, 'details' AS name, 'textarea' as type, TRUE as required, 12 as width, (SELECT details from colvisite where id=$intervention) as value;
 

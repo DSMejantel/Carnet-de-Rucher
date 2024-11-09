@@ -6,9 +6,9 @@ SET group_id = (SELECT user_info.groupe FROM login_session join user_info on use
 
  UPDATE colvisite 
  SET
-    horodatage=$horodatage,
-    details=$details,
-    suivi=$suivi
+    horodatage=:horodatage,
+    details=:details,
+    suivi=:suivi
     WHERE id=$intervention
  RETURNING 
  'redirect' as component,
